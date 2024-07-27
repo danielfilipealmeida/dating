@@ -60,6 +60,7 @@ builder.queryFields((t) => ({
       radius: t.int({required: true})
     },
     resolve: async (query, root, args, ctx) => {
+      const radius = parseFloat(args.radius) / 111
       const result = await prisma.$queryRaw`WITH user_geom AS (
             SELECT coords
             FROM "User"
@@ -70,7 +71,9 @@ builder.queryFields((t) => ({
           u2.name,
           u2.bio
         FROM user_geom, "User" AS u2
-        WHERE ST_DWithin(user_geom.coords, u2.coords, ${args.radius}) and id != ${parseInt(args.id)};`
+        WHERE ST_DWithin(user_geom.coords, u2.coords, ${radius}) and id != ${parseInt(args.id)} 
+        ORDER BY RANDOM()
+        LIMIT ${parseInt(process.env.MAX_PEOPLE_PER_SEARCH)};`
 
       return result
     }
