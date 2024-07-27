@@ -11,6 +11,7 @@ type Mutation {
 
 type Query {
   allUsers: [User!]
+  people(id: ID, radius: Int): [User!]
   user(id: ID): User
 }
 

@@ -52,6 +52,28 @@ builder.queryFields((t) => ({
     resolve: (query, root, args, ctx) => {
       return prisma.user.findFirst({ where: { id: parseInt(args.id)}})
     }
+  }),
+  people: t.prismaField({
+    type: ['User'],
+    args: {
+      id: t.id({required: true}),
+      radius: t.int({required: true})
+    },
+    resolve: async (query, root, args, ctx) => {
+      const result = await prisma.$queryRaw`WITH user_geom AS (
+            SELECT coords
+            FROM "User"
+            WHERE id = ${parseInt(args.id)}
+        )
+        SELECT 
+          u2.id,
+          u2.name,
+          u2.bio
+        FROM user_geom, "User" AS u2
+        WHERE ST_DWithin(user_geom.coords, u2.coords, ${args.radius}) and id != ${parseInt(args.id)};`
+
+      return result
+    }
   })
 }))
 
@@ -109,9 +131,3 @@ builder.mutationFields((t) => ({
     }
   })
 }))
-
-/*
-TODO:
-- setUserData - sets all profile fields besides the coordinates
-
-*/
