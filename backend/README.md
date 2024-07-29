@@ -26,5 +26,5 @@ Notice that the configuration is the same specified for the `PostgreSQL/PostGIS`
 ## Running
 
 ```bash
-streamlit run main.py
+streamlit run Backend.py
 ```
