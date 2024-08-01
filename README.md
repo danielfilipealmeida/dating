@@ -12,3 +12,13 @@ GraphQL API implemented with prisma and used to interact with a PostgreSQL datab
 ## Frontend
 
 The Web App.
+
+
+## Tasks
+
+- [ ] Add Profile page
+- [ ] Add Matching page
+- [ ] Add Add Matches List page
+- [ ] Add sex and sex preference to the User
+- [ ] Add pictures (also a bucket to keep them)
+- [ ] 
