@@ -20,6 +20,7 @@ model User {
   email String  @unique
   name  String?
   bio   String?
+  password String?
 
   coords Unsupported("geometry(Point, 4326)")?
 

@@ -1,4 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client'
+import { hashString } from '../src/lib'
 
 const prisma = new PrismaClient()
 
@@ -8,21 +9,24 @@ const userData: Prisma.UserCreateInput[] = [
     email: 'alice@prisma.io',
     bio: 'a data scientist who loves hiking and photography. Always seeking new challenges in AI and machine learning',
     latitude: 37.0179137,
-    longitude: -7.9873126
+    longitude: -7.9873126,
+    password: ""
   },
   {
     name: 'Emma',
     email: 'emma@prisma.io',
     bio: 'a talented graphic designer passionate about minimalist art. Enjoys baking and exploring new coffee shops.',
     latitude: 37.1162609,
-    longitude: -8.0889362
+    longitude: -8.0889362,
+    password: ""
   },
   {
     name: 'Liam',
     email: 'liam@email.pt',
     bio: 'a software engineer and avid gamer. Dedicated to creating immersive VR experiences and loves sci-fi movies.',
     latitude: 38.7441844,
-    longitude: -9.2421369
+    longitude: -9.2421369,
+    password: ""
   },
 ]
 
@@ -33,7 +37,8 @@ async function main() {
       data: {
         name: u.name,
         email: u.email,
-        bio: u.bio
+        bio: u.bio,
+        password: hashString(u.password)
       },
     })
     console.log(`Created user with id: ${user.id}`)

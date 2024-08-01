@@ -1,5 +1,6 @@
 import { builder } from '../builder'
 import { prisma } from '../db'
+import { hashString } from '../lib'
 
 builder.prismaObject('User', {
   fields: (t) => ({
@@ -20,7 +21,7 @@ export const UserUniqueInput = builder.inputType('UserUniqueInput', {
 const UserCreateInput = builder.inputType('UserCreateInput', {
   fields: (t) => ({
     email: t.string({ required: true }),
-    name: t.string(),
+    password: t.string(),
   }),
 })
 
@@ -90,11 +91,12 @@ builder.mutationFields((t) => ({
       }),
     },
     resolve: (query, parent, args) => {
+      const hashedPassword = hashString(args.data.password)
       return prisma.user.create({
         ...query,
         data: {
           email: args.data.email,
-          name: args.data.name,
+          password: hashedPassword
         },
       })
     },

@@ -30,7 +30,7 @@ type User {
 
 input UserCreateInput {
   email: String!
-  name: String
+  password: String
 }
 
 input UserUniqueInput {
