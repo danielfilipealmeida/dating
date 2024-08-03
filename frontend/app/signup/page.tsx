@@ -1,22 +1,27 @@
 'use client'
 
-//import { signup } from "@/app/lib/actions"
 import Button from "@/app/components/Button"
 import TextInput from "@/app/components/TextInput"
 import { H1 } from "@/app/components/Headers"
-import { useState } from "react";
+import { useContext, useState } from "react";
 import invariant from "tiny-invariant";
 import { gql } from "@apollo/client";
 import client from "@/app/lib/apolloClient";
+//import { LoggedIn } from "@/stories/Header.stories";
+//import { useRouter } from "next/router";
+import Warning from "../components/Warning";
+import AppDataContext from "../context/appData";
 
 
-
-/**
- * 
- * @returns 
- */
 export default function SignUp() {    
     const [error, setError] = useState<string|null>(null)
+    const [data, setData] = useContext(AppDataContext)
+
+    console.log(data)
+
+    //const [appData, setAppData] = useAppDataContext()
+    //const router = useRouter()
+
 
     const handleForm = async (formData: FormData) => {
         try {
@@ -35,7 +40,17 @@ export default function SignUp() {
                     }
                 }        
             })
-            debugger
+            
+            const newUserId = data['signupUser']['id']
+            
+            setData({
+                userId: newUserId,
+                loggedIn: true,
+                ...data
+            })
+            /*
+            router.push('/edit')
+            */
         }
         catch (err: any) {
             setError(err.message)
@@ -48,12 +63,12 @@ export default function SignUp() {
             <H1>Sign up</H1>
             <form action={handleForm}>
                 {error && (
-                    <div>{error}</div>
+                    <Warning>{error}</Warning>
                 )}
                
                 <TextInput type="email" name="email" placeholder="Email" required />
                 <TextInput type="password" name="password" placeholder="Password" required />
-                <TextInput type="password" name="password2" placeholder="Repeat Password" require />
+                <TextInput type="password" name="password2" placeholder="Repeat Password" required />
                 <Button label="Sign up" />
             </form>
         </main>
