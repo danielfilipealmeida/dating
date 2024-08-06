@@ -1,7 +1,7 @@
-import { authenticate } from "@/app/lib/actions"
 import Button from "@/app/components/Button"
 import TextInput from "@/app/components/TextInput"
 import {H1} from "@/app/components/Headers"
+import { authenticate } from "../actions"
 
 export default function Login() {
     return (

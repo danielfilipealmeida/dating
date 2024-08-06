@@ -1,3 +1,4 @@
+import { QueryFieldBuilder } from '@pothos/core'
 import { builder } from '../builder'
 import { prisma } from '../db'
 import { hashString } from '../lib'
@@ -40,7 +41,47 @@ const setUserDataInput = builder.inputType('setUserDataInput', {
   })
 })
 
+const AuthenticationResponse = builder.objectRef<{
+  success: boolean,
+  message?: string
+}>('AuthenticationResponse')
+AuthenticationResponse.implement({
+  fields: (t) => ({
+    success: t.exposeString('success'), 
+    message: t.exposeString('message'),
+  })
+})
+
 builder.queryFields((t) => ({
+  authenticate: t.field({
+    type: AuthenticationResponse,
+    args: {
+      email: t.string({required: true}),
+      password: t.string({required: true})
+    },
+    resolve: async (parent, args) => {
+      try {
+        const hashedPassword = hashString(args.password)
+        const data = await prisma.user.findUnique({where:{
+          email: args.email,
+          password: hashedPassword
+        }})
+        if (!data) {
+          throw new Error("Authentication failed")
+        }
+        return {
+          success: true,
+          message: "Successful Authentication"
+        }
+      }
+      catch (err) {
+        return {
+          success: false,
+          message: err.message
+        }
+      }
+    }
+  }),
   allUsers: t.prismaField({
     type: ['User'],
     resolve: (query) => prisma.user.findMany({ ...query }),
@@ -61,6 +102,12 @@ builder.queryFields((t) => ({
       radius: t.int({required: true})
     },
     resolve: async (query, root, args, ctx) => {
+      /*
+      Todo:
+      - create a table with a list of possible connections
+      - return always that table when some of the connections haven't been voted
+      - when the table is empty, generate a new set of records using the existing query
+      */
       const radius = parseFloat(args.radius) / 111
       const result = await prisma.$queryRaw`WITH user_geom AS (
             SELECT coords

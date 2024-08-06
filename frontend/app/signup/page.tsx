@@ -7,26 +7,23 @@ import { useContext, useState } from "react";
 import invariant from "tiny-invariant";
 import { gql } from "@apollo/client";
 import client from "@/app/lib/apolloClient";
-//import { LoggedIn } from "@/stories/Header.stories";
-//import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Warning from "../components/Warning";
 import AppDataContext from "../context/appData";
+import { signUp } from "../actions";
 
 
 export default function SignUp() {    
     const [error, setError] = useState<string|null>(null)
-    const [data, setData] = useContext(AppDataContext)
-
-    console.log(data)
-
-    //const [appData, setAppData] = useAppDataContext()
-    //const router = useRouter()
-
+    const {appData, setAppData} = useContext(AppDataContext)
+    const router = useRouter()
 
     const handleForm = async (formData: FormData) => {
         try {
             invariant(formData.get('password') == formData.get('password2'), "Passwords need to be the same.")
-
+            
+            // todo: move this into a server action
+            /*
             const { data } = await client.mutate({
                 mutation: gql`mutation SignupUser($data: UserCreateInput!) {
                     signupUser(data: $data) {
@@ -40,21 +37,28 @@ export default function SignUp() {
                     }
                 }        
             })
+                */
+
+            const data = await signUp(formData)
+
+            if (data.error) {
+                setError(data.message)
+                return
+            }
             
             const newUserId = data['signupUser']['id']
             
-            setData({
+            setAppData({
                 userId: newUserId,
                 loggedIn: true,
                 ...data
             })
-            /*
+            
             router.push('/edit')
-            */
         }
         catch (err: any) {
             setError(err.message)
-            console.log(error)
+            console.log(err)
         }
     }
 

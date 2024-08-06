@@ -10,7 +10,7 @@ const userData: Prisma.UserCreateInput[] = [
     bio: 'a data scientist who loves hiking and photography. Always seeking new challenges in AI and machine learning',
     latitude: 37.0179137,
     longitude: -7.9873126,
-    password: ""
+    password: "pass123"
   },
   {
     name: 'Emma',
@@ -18,7 +18,7 @@ const userData: Prisma.UserCreateInput[] = [
     bio: 'a talented graphic designer passionate about minimalist art. Enjoys baking and exploring new coffee shops.',
     latitude: 37.1162609,
     longitude: -8.0889362,
-    password: ""
+    password: "some_random_pass"
   },
   {
     name: 'Liam',
@@ -26,7 +26,7 @@ const userData: Prisma.UserCreateInput[] = [
     bio: 'a software engineer and avid gamer. Dedicated to creating immersive VR experiences and loves sci-fi movies.',
     latitude: 38.7441844,
     longitude: -9.2421369,
-    password: ""
+    password: "mypass"
   },
 ]
 
