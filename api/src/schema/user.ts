@@ -43,11 +43,13 @@ const setUserDataInput = builder.inputType('setUserDataInput', {
 
 const AuthenticationResponse = builder.objectRef<{
   success: boolean,
+  id?: number,
   message?: string
 }>('AuthenticationResponse')
 AuthenticationResponse.implement({
   fields: (t) => ({
-    success: t.exposeString('success'), 
+    success: t.exposeBoolean('success'), 
+    id: t.exposeID('id'),
     message: t.exposeString('message'),
   })
 })
@@ -71,6 +73,7 @@ builder.queryFields((t) => ({
         }
         return {
           success: true,
+          id: data.id,
           message: "Successful Authentication"
         }
       }

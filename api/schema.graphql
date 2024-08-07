@@ -1,6 +1,7 @@
 type AuthenticationResponse {
+  id: ID
   message: String
-  success: String
+  success: Boolean
 }
 
 """
