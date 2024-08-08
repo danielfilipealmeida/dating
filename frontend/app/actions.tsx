@@ -46,7 +46,7 @@ export async function authenticate(formData: FormData) {
                 password: formData.get('password')
             }
         })
-        debugger
+        
         if (!data.authenticate.success) {
             throw new Error(data.authenticate.message)
         }
@@ -57,8 +57,6 @@ export async function authenticate(formData: FormData) {
         return {
             success: true
         }
-
-        //router.push('/edit')
     }
     catch(err: any) {
         return {
@@ -68,26 +66,31 @@ export async function authenticate(formData: FormData) {
     }
 }
 
-/*
-export async function signIn(formData: FormData) {
-  
-}
-
-export async function authenticate(_currentState:unknown, formData: FormData) {
+/**
+ * Queries the API for the user Data.
+ * @param id
+ * @returns the User data
+ */
+export async function getUserData(id: number) {
     try {
-        await signIn(formData)
+        const {data} = await client.query({
+            query: gql`query User($id: ID!) {
+                user(id: $id) {
+                    email
+                    id
+                    name
+                    bio
+                }
+            }`,
+            variables: {
+                id: id
+            }
+        })
+        
+        return data.user
     }
-    catch (error) {
-      if (error) {
-        switch (error.type) {
-          case 'CredentialsSignin':
-            return 'Invalid credentials.'
-          default:
-            return 'Something went wrong.'
-        }
-      }
-      throw error
-    }   
+    catch(err) {
+        return {}
+    }
 }
 
-*/
