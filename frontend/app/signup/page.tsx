@@ -19,8 +19,10 @@ export default function SignUp() {
     const [error, setError] = useState<string|null>(null)
     const {appData, setAppData} = useContext(AppDataContext)
     const router = useRouter()
+    const [submitting, setSubmitting] = useState(false)
 
     const handleForm = async (formData: FormData) => {
+        setSubmitting(true)
         try {
             invariant(formData.get('password') == formData.get('password2'), "Passwords need to be the same.")
         
@@ -67,7 +69,7 @@ export default function SignUp() {
                 />
                 <TextField type="password" name="password" title="Password" required />
                 <TextField type="password" name="password2" title="Repeat Password" required />
-                <Button label="Sign up" />
+                <SubmitButton label="Sign up" disabled={submitting} />
             </form>
         </main>
     )

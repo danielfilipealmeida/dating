@@ -10,6 +10,7 @@ import { TextAreaField, TextField } from "../components/Fields";
 import Button from "../components/Button";
 import { getUserData, updateUserData } from "../actions";
 import SubmitButton from "../components/SubmitButton";
+import Message from "../components/Message";
 
 
 
@@ -19,6 +20,7 @@ export default function Edit() {
     const [data, setData] = useState({})
     const [isLoading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
+    const [message, setMessage] = useState("")
   
     useEffect(() => {
         setError(null)
@@ -39,6 +41,7 @@ export default function Edit() {
                     throw new Error(result.error)
                 }
                 setData(result)
+                setMessage("User data updated!")
             }).catch(reason => {
                 setError(reason.message)
             })
@@ -55,6 +58,9 @@ export default function Edit() {
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <H1>Edit profile</H1>
+        {message && (
+            <Message>{message}</Message>
+        )}
        
         <form action={handleForm} className="w-full">
             {error && (
