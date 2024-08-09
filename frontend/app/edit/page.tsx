@@ -8,7 +8,8 @@ import { H1 } from "../components/Headers"
 import TextArea from "../components/TextArea";
 import { TextAreaField, TextField } from "../components/Fields";
 import Button from "../components/Button";
-import { getUserData } from "../actions";
+import { getUserData, updateUserData } from "../actions";
+import SubmitButton from "../components/SubmitButton";
 
 
 
@@ -17,8 +18,10 @@ export default function Edit() {
     const {appData, setAppData} = useContext(AppDataContext)
     const [data, setData] = useState({})
     const [isLoading, setLoading] = useState(true)
+    const [submitting, setSubmitting] = useState(false)
   
     useEffect(() => {
+        setError(null)
         getUserData(appData.currentUser).then((res) => {
             setData(res)
             setLoading(false)
@@ -27,7 +30,24 @@ export default function Edit() {
     
     
     const handleForm = async (formData: FormData) => {
+        setSubmitting(true)
         
+        try {
+            formData.set('id', appData.currentUser)
+            updateUserData(formData).then((result)=>{
+                if (result.error) {
+                    throw new Error(result.error)
+                }
+                setData(result)
+            }).catch(reason => {
+                setError(reason.message)
+            })
+        }
+        catch(err) {
+            setError(err.message)
+        }
+
+        setSubmitting(false)
     }
 
     if(isLoading) return <p>Loading...</p>
@@ -44,7 +64,7 @@ export default function Edit() {
             <TextField type="text" name="name" title="Name" value={data?.name} required />
             <TextAreaField name="bio" title="Bio" value={data?.bio} required />
 
-            <Button label="Save profile data" /> 
+            <SubmitButton label="Save profile data" disabled={submitting} /> 
         </form>
         </main>
     )

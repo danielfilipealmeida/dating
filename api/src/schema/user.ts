@@ -28,16 +28,17 @@ const UserCreateInput = builder.inputType('UserCreateInput', {
 
 const SetUserLocationInput = builder.inputType('SetUserLocationInput', {
   fields: (t) => ({
-    id: t.id({ required: true }),
+    id: t.string({ required: true }),
     latitude: t.float({ required: true }),
     longitude: t.float({ required: true }),
   }),
 })
 
-const setUserDataInput = builder.inputType('setUserDataInput', {
+const SetUserDataInput = builder.inputType('SetUserDataInput', {
   fields: (t) => ({
     id: t.id({ required: true }),
-    bio: t.string({ required: true })
+    bio: t.string({ required: true }),
+    name: t.string({ required: true })
   })
 })
 
@@ -62,6 +63,7 @@ builder.queryFields((t) => ({
       password: t.string({required: true})
     },
     resolve: async (parent, args) => {
+      debugger
       try {
         const hashedPassword = hashString(args.password)
         const data = await prisma.user.findUnique({where:{
@@ -169,17 +171,18 @@ builder.mutationFields((t) => ({
     type: 'User',
     args: {
       data: t.arg({
-        type: setUserDataInput,
+        type: SetUserDataInput,
         required: true
       }),
     },
     resolve: async (query, parent, args) => {
       const updateResult = await prisma.user.update({
         where: {
-          id: args.data.id
+          id: parseInt(args.data.id)
         },
         data: {
-          bio: args.data.bio
+          bio: args.data.bio,
+          name: args.data.name
         }
       })
       return prisma.user.findUnique({where: {id: parseInt(args.data.id)}})

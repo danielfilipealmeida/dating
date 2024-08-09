@@ -21,24 +21,7 @@ export default function SignUp() {
     const handleForm = async (formData: FormData) => {
         try {
             invariant(formData.get('password') == formData.get('password2'), "Passwords need to be the same.")
-            
-            // todo: move this into a server action
-            /*
-            const { data } = await client.mutate({
-                mutation: gql`mutation SignupUser($data: UserCreateInput!) {
-                    signupUser(data: $data) {
-                        id
-                    }
-                }`,
-                variables: {
-                    data: {
-                        email: formData.get('email'),
-                        password: formData.get('password')
-                    }
-                }        
-            })
-                */
-
+        
             const data = await signUp(formData)
 
             if (data.error) {

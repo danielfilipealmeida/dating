@@ -94,3 +94,32 @@ export async function getUserData(id: number) {
     }
 }
 
+export async function updateUserData(formData:FormData) {
+    try {
+        const {data} = await client.mutate({
+            mutation: gql`mutation UpdateUser($data: SetUserDataInput!) {
+                setUserData(data: $data) {
+                    id
+                    name
+                    bio
+                }
+            }`,
+            variables: {
+                data: {
+                    id: formData.get('id'),
+                    bio: formData.get('bio'),
+                    name: formData.get('name')
+                }
+            }
+        })
+        
+        return data.setUserData
+        
+    }
+    catch(err) {
+        console.log(err.message)
+        return {
+            error: "Error updating User"
+        }
+    }
+}

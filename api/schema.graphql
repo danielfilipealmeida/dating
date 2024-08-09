@@ -10,7 +10,7 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type Mutation {
-  setUserData(data: setUserDataInput!): User
+  setUserData(data: SetUserDataInput!): User
   setUserLocation(data: SetUserLocationInput!): User
   signupUser(data: UserCreateInput!): User
 }
@@ -22,8 +22,14 @@ type Query {
   user(id: ID): User
 }
 
-input SetUserLocationInput {
+input SetUserDataInput {
+  bio: String!
   id: ID!
+  name: String!
+}
+
+input SetUserLocationInput {
+  id: String!
   latitude: Float!
   longitude: Float!
 }
@@ -43,9 +49,4 @@ input UserCreateInput {
 input UserUniqueInput {
   email: String
   id: Int
-}
-
-input setUserDataInput {
-  bio: String!
-  id: ID!
 }
