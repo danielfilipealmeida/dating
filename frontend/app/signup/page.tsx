@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import Warning from "../components/Warning";
 import AppDataContext from "../context/appData";
 import { signUp } from "../actions";
+import Select from "../components/Select";
+import { SelectField, TextField } from "../components/Fields";
 
 
 export default function SignUp() {    
@@ -53,9 +55,18 @@ export default function SignUp() {
                     <Warning>{error}</Warning>
                 )}
                
-                <TextInput type="email" name="email" placeholder="Email" required />
-                <TextInput type="password" name="password" placeholder="Password" required />
-                <TextInput type="password" name="password2" placeholder="Repeat Password" required />
+                <TextField type="email" name="email" title="Email" required />
+                <SelectField 
+                    title="Sex"
+                    name="sex"
+                    value="MALE"
+                    options={{
+                        "MALE": "Male",
+                        "FEMALE": "Female"
+                    }}
+                />
+                <TextField type="password" name="password" title="Password" required />
+                <TextField type="password" name="password2" title="Repeat Password" required />
                 <Button label="Sign up" />
             </form>
         </main>

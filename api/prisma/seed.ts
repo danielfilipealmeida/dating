@@ -10,7 +10,8 @@ const userData: Prisma.UserCreateInput[] = [
     bio: 'a data scientist who loves hiking and photography. Always seeking new challenges in AI and machine learning',
     latitude: 37.0179137,
     longitude: -7.9873126,
-    password: "pass123"
+    password: "pass123",
+    sex: 'FEMALE'
   },
   {
     name: 'Emma',
@@ -18,7 +19,8 @@ const userData: Prisma.UserCreateInput[] = [
     bio: 'a talented graphic designer passionate about minimalist art. Enjoys baking and exploring new coffee shops.',
     latitude: 37.1162609,
     longitude: -8.0889362,
-    password: "some_random_pass"
+    password: "some_random_pass",
+    sex: 'FEMALE'
   },
   {
     name: 'Liam',
@@ -26,7 +28,8 @@ const userData: Prisma.UserCreateInput[] = [
     bio: 'a software engineer and avid gamer. Dedicated to creating immersive VR experiences and loves sci-fi movies.',
     latitude: 38.7441844,
     longitude: -9.2421369,
-    password: "mypass"
+    password: "mypass",
+    sex: 'MALE'
   },
 ]
 
@@ -38,7 +41,8 @@ async function main() {
         name: u.name,
         email: u.email,
         bio: u.bio,
-        password: hashString(u.password)
+        password: hashString(u.password),
+        sex: u.sex
       },
     })
     console.log(`Created user with id: ${user.id}`)

@@ -15,12 +15,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Add more
+enum Sex {
+  MALE
+  FEMALE
+}
+
 model User {
   id    Int     @id @default(autoincrement())
   email String  @unique
   name  String?
   bio   String?
   password String?
+  sex Sex?
 
   coords Unsupported("geometry(Point, 4326)")?
 

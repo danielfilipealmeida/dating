@@ -34,16 +34,23 @@ input SetUserLocationInput {
   longitude: Float!
 }
 
+enum Sex {
+  FEMALE
+  MALE
+}
+
 type User {
   bio: String
   email: String
   id: Int
   name: String
+  sex: String
 }
 
 input UserCreateInput {
   email: String!
   password: String
+  sex: String
 }
 
 input UserUniqueInput {

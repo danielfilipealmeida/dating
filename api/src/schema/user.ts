@@ -3,12 +3,22 @@ import { builder } from '../builder'
 import { prisma } from '../db'
 import { hashString } from '../lib'
 
+export enum Sex {
+  MALE,
+  FEMALE
+}
+
+builder.enumType(Sex, {
+  name: 'Sex'
+})
+
 builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeInt('id'),
     name: t.exposeString('name', { nullable: true }),
     email: t.exposeString('email'),
-    bio: t.exposeString('bio')
+    bio: t.exposeString('bio'),
+    sex: t.exposeString('sex')
   }),
 })
 
@@ -23,6 +33,7 @@ const UserCreateInput = builder.inputType('UserCreateInput', {
   fields: (t) => ({
     email: t.string({ required: true }),
     password: t.string(),
+    sex: t.string()
   }),
 })
 
@@ -148,7 +159,8 @@ builder.mutationFields((t) => ({
         ...query,
         data: {
           email: args.data.email,
-          password: hashedPassword
+          password: hashedPassword,
+          sex: args.data.sex
         },
       })
     },

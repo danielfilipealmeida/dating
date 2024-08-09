@@ -1,10 +1,11 @@
+import Select from "./Select"
 import TextArea from "./TextArea"
 import TextInput from "./TextInput"
 
 interface TextFieldProps {
     name: string
     title: string
-    value: string
+    value?: string
     required: boolean
     type: string
 }
@@ -23,7 +24,7 @@ export function TextField({name, title, value, required, type}: TextFieldProps) 
             <FieldCaption>{title}</FieldCaption>
             <TextInput
                 name={name} 
-                value={value} 
+                value={value || ""} 
                 type={type}
                 required={required} 
                 fullWidth={true}
@@ -35,7 +36,7 @@ export function TextField({name, title, value, required, type}: TextFieldProps) 
 interface TextAreaFieldProps {
     title: string
     name: string
-    value: string
+    value?: string
     required: boolean
 }
 
@@ -45,8 +46,29 @@ export function TextAreaField({title, name, value, required} : TextAreaFieldProp
             <FieldCaption>{title}</FieldCaption>
             <TextArea
                 name={name}
-                value={value}
+                value={value || ""}
                 required={required}
+                fullWidth={true}
+            />
+        </>
+    )
+}
+
+export interface SelectFieldProps {
+    title: string
+    name: string
+    value?: string
+    options: object
+}
+
+export function SelectField({title, name, value, options}:SelectFieldProps) {
+    return (
+        <>
+            <FieldCaption>{title}</FieldCaption>
+            <Select
+                name={name}
+                value={value || ""}
+                options={options}
                 fullWidth={true}
             />
         </>
