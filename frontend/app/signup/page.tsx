@@ -1,19 +1,13 @@
 'use client'
 
-import Button from "@/app/components/Button"
-import TextInput from "@/app/components/TextInput"
 import { H1 } from "@/app/components/Headers"
 import { useContext, useState } from "react";
 import invariant from "tiny-invariant";
-import { gql } from "@apollo/client";
-import client from "@/app/lib/apolloClient";
 import { useRouter } from "next/navigation";
 import Warning from "../components/Warning";
 import AppDataContext from "../context/appData";
 import { signUp } from "../actions";
-import Select from "../components/Select";
 import { SelectField, TextField } from "../components/Fields";
-
 
 export default function SignUp() {    
     const [error, setError] = useState<string|null>(null)

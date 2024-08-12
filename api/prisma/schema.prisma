@@ -28,6 +28,7 @@ model User {
   bio   String?
   password String?
   sex Sex?
+  preferences Json?
 
   coords Unsupported("geometry(Point, 4326)")?
 

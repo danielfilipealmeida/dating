@@ -81,6 +81,10 @@ export async function getUserData(id: number) {
                     id
                     name
                     bio
+                    preferences {
+                        sex
+                        distance
+                    }
                 }
             }`,
             variables: {
@@ -103,19 +107,26 @@ export async function updateUserData(formData:FormData) {
                     id
                     name
                     bio
+                    preferences {
+                        sex
+                        distance
+                    }
                 }
             }`,
             variables: {
                 data: {
                     id: formData.get('id'),
                     bio: formData.get('bio'),
-                    name: formData.get('name')
+                    name: formData.get('name'),
+                    preferences: {
+                        sex: formData.getAll('preferences.sex'),
+                        distance: parseInt(formData.get('preferences.distance')),
+                    }
                 }
             }
         })
         
         return data.setUserData
-        
     }
     catch(err) {
         console.log(err.message)
@@ -123,4 +134,8 @@ export async function updateUserData(formData:FormData) {
             error: "Error updating User"
         }
     }
+}
+
+export async function logout() {
+    cookies().delete('currentUser')
 }

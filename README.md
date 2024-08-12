@@ -3,7 +3,8 @@
 Copyright 2024 Daniel Almeida
 danielf.almeida at gmail dot com
 
-A simple Dating App as an exercise and learning experience. 
+A simple Dating Solution, implemented as an exercise and learning experience. 
+Contains API, backend and client.
 
 ## API
 
@@ -11,7 +12,13 @@ GraphQL API implemented with prisma and used to interact with a PostgreSQL datab
 
 ## Frontend
 
-The Web App.
+The Web App, implemented with Next.JS.
+
+
+## Backend
+
+Implemented with Streamlit, to be able to view and change user data, as well as to create testing
+data (seeds).
 
 
 ## Tasks

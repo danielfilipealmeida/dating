@@ -26,6 +26,7 @@ input SetUserDataInput {
   bio: String!
   id: ID!
   name: String!
+  preferences: UserPreferences!
 }
 
 input SetUserLocationInput {
@@ -44,6 +45,7 @@ type User {
   email: String
   id: Int
   name: String
+  preferences: UserPreferencesOutput
   sex: String
 }
 
@@ -51,6 +53,17 @@ input UserCreateInput {
   email: String!
   password: String
   sex: String
+}
+
+input UserPreferences {
+  distance: Int!
+  sex: [String!]!
+}
+
+"""the configuration of the search of a user"""
+type UserPreferencesOutput {
+  distance: Int
+  sex: [String!]
 }
 
 input UserUniqueInput {

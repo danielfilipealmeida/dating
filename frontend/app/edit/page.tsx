@@ -6,11 +6,12 @@ import Warning from "../components/Warning";
 import TextInput from "../components/TextInput"
 import { H1 } from "../components/Headers"
 import TextArea from "../components/TextArea";
-import { TextAreaField, TextField } from "../components/Fields";
+import { SelectField, TextAreaField, TextField } from "../components/Fields";
 import Button from "../components/Button";
 import { getUserData, updateUserData } from "../actions";
 import SubmitButton from "../components/SubmitButton";
 import Message from "../components/Message";
+import Section from "../components/Section";
 
 
 
@@ -33,7 +34,7 @@ export default function Edit() {
     
     const handleForm = async (formData: FormData) => {
         setSubmitting(true)
-        
+        setError(null)
         try {
             formData.set('id', appData.currentUser)
             updateUserData(formData).then((result)=>{
@@ -67,8 +68,34 @@ export default function Edit() {
                 <Warning>{error}</Warning>
             )}
         
-            <TextField type="text" name="name" title="Name" value={data?.name} required />
-            <TextAreaField name="bio" title="Bio" value={data?.bio} required />
+            <Section title="User Information">
+                <TextField type="text" name="name" title="Name" value={data?.name} required />
+                <TextAreaField name="bio" title="Bio" value={data?.bio} required />
+            </Section>
+
+            <Section title="Search Preferences">
+                <SelectField 
+                        title="Sex"
+                        name="preferences.sex"
+                        value={data?.preferences.sex}
+                        multiple={true}
+                        options={{
+                            "MALE": "Male",
+                            "FEMALE": "Female"
+                        }}
+                    />
+                <TextField 
+                    name="preferences.distance" 
+                    title={"Distance"} 
+                    required={false} 
+                    type={"range"} 
+                    min="0" 
+                    max="250"   
+                    value={data?.preferences?.distance}
+                />      
+            </Section>
+
+            <br />
 
             <SubmitButton label="Save profile data" disabled={submitting} /> 
         </form>

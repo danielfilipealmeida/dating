@@ -2,21 +2,20 @@ import { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
     const allowedUnauthenticatedRoutes = [
+        '/',
         '/login',
-        '/signup'
+        '/signup',
+        '/favicon.ico'
     ]
-
+    
     const currentUser = request.cookies.get('currentUser')?.value
 
-    // todo: fix this later
-    /*
-    if (currentUser && !request.nextUrl.pathname.startsWith('/dashboard')) {
-        return Response.redirect(new URL('/dashboard', request.url))
-    }
-        */
-
-    if (!currentUser && !allowedUnauthenticatedRoutes.includes(request.nextUrl.pathname)) {
-        return Response.redirect(new URL(request.nextUrl.pathname, request.url))
+    if(!currentUser) {
+        if (allowedUnauthenticatedRoutes.includes(request.nextUrl.pathname)) {
+            return
+        }
+        
+        return Response.redirect(new URL('/login', request.url))
     }
 }
 

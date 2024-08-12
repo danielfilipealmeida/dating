@@ -5,13 +5,15 @@ export interface SelectProps {
     value: string
     options: object
     fullWidth?: boolean
+    multiple?: boolean
 }
 
 export default function Select({
     name,
     value,
     options,
-    fullWidth
+    fullWidth,
+    multiple
 } : SelectProps) {
     let classNames = SHARED_FIELD_CLASSES
     if (fullWidth) {
@@ -19,10 +21,13 @@ export default function Select({
     }
 
     return (
-        <select name={name} defaultValue={value} className={classNames}>
+        <select name={name} defaultValue={value} className={classNames} multiple={multiple}>
             {Object.keys(options).map((option:string) => {
                 return (
-                    <option value={option}>{options[option]}</option>
+                    <option 
+                    value={option}
+                    key={option}
+                    >{options[option]}</option>
                 )
             })}
 

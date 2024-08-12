@@ -12,13 +12,46 @@ builder.enumType(Sex, {
   name: 'Sex'
 })
 
+builder.inputType('UserPreferences', {
+  fields: (t) => ({
+    distance: t.int({required: true}),
+    sex: t.stringList({required: true})
+  })
+})
+
+class UserPreferencesOutput {
+  distance: number;
+  sex: string[];
+
+  constructor(distance: number, sex:string[]) {
+    this.distance = distance || 20;
+    this.sex = sex || [];
+  }
+}
+  
+builder.objectType(UserPreferencesOutput, {
+  name: 'UserPreferencesOutput',
+  description: "the configuration of the search of a user",
+  fields: (t) => ({
+    distance: t.int({required: true}),
+    sex: t.stringList({required: true})
+  }),
+})
+
 builder.prismaObject('User', {
   fields: (t) => ({
     id: t.exposeInt('id'),
     name: t.exposeString('name', { nullable: true }),
     email: t.exposeString('email'),
     bio: t.exposeString('bio'),
-    sex: t.exposeString('sex')
+    sex: t.exposeString('sex'),
+    preferences: t.field({
+      type: 'UserPreferencesOutput',
+      resolve: (data) => {
+        return new UserPreferencesOutput(data.preferences.distance || 20 , data.preferences.sex)
+        return data
+      }
+    })
   }),
 })
 
@@ -49,7 +82,11 @@ const SetUserDataInput = builder.inputType('SetUserDataInput', {
   fields: (t) => ({
     id: t.id({ required: true }),
     bio: t.string({ required: true }),
-    name: t.string({ required: true })
+    name: t.string({ required: true }),
+    preferences: t.field({
+      type: 'UserPreferences',
+      required: true
+    })
   })
 })
 
@@ -74,7 +111,6 @@ builder.queryFields((t) => ({
       password: t.string({required: true})
     },
     resolve: async (parent, args) => {
-      debugger
       try {
         const hashedPassword = hashString(args.password)
         const data = await prisma.user.findUnique({where:{
@@ -107,8 +143,9 @@ builder.queryFields((t) => ({
     args: {
       id: t.id({required: true})
     },
-    resolve: (query, root, args, ctx) => {
-      return prisma.user.findFirst({ where: { id: parseInt(args.id)}})
+    resolve: async (query, root, args, ctx) => {
+      const result = await prisma.user.findFirst({ where: { id: parseInt(args.id)}})
+      return result
     }
   }),
   people: t.prismaField({
@@ -188,16 +225,21 @@ builder.mutationFields((t) => ({
       }),
     },
     resolve: async (query, parent, args) => {
-      const updateResult = await prisma.user.update({
+      const updateResult = prisma.user.update({
         where: {
           id: parseInt(args.data.id)
         },
         data: {
           bio: args.data.bio,
-          name: args.data.name
+          name: args.data.name,
+          preferences: {
+            sex: args.data?.preferences?.sex || [],
+            distance: args.data?.preferences?.distance || 20
+          }
         }
       })
-      return prisma.user.findUnique({where: {id: parseInt(args.data.id)}})
+
+      return updateResult
     }
   })
 }))

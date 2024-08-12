@@ -11,17 +11,18 @@ interface TextFieldProps {
 }
 
 
-export function FieldCaption({children} : {children: React.ReactNode}) {
+export function FieldCaption({name, children} : {name: string, children: React.ReactNode}) {
     return (
-        <div
-            className="w-max font-medium  text-gray-800 px-1 mt-2"
-        >{children}</div>
+        <label
+            className="w-max font-medium  text-gray-800 px-1 mt-3 block"
+            htmlFor={name}
+        >{children}</label>
     )
 }
 export function TextField({name, title, value, required, type}: TextFieldProps) {
     return (
         <>
-            <FieldCaption>{title}</FieldCaption>
+            <FieldCaption name={name}>{title}</FieldCaption>
             <TextInput
                 name={name} 
                 value={value || ""} 
@@ -43,7 +44,7 @@ interface TextAreaFieldProps {
 export function TextAreaField({title, name, value, required} : TextAreaFieldProps) {
     return (
         <>
-            <FieldCaption>{title}</FieldCaption>
+            <FieldCaption name={name}>{title}</FieldCaption>
             <TextArea
                 name={name}
                 value={value || ""}
@@ -59,17 +60,19 @@ export interface SelectFieldProps {
     name: string
     value?: string
     options: object
+    multiple?: boolean
 }
 
-export function SelectField({title, name, value, options}:SelectFieldProps) {
+export function SelectField({title, name, value, options, multiple}:SelectFieldProps) {
     return (
         <>
-            <FieldCaption>{title}</FieldCaption>
+            <FieldCaption name={name}>{title}</FieldCaption>
             <Select
                 name={name}
                 value={value || ""}
                 options={options}
                 fullWidth={true}
+                multiple={multiple}
             />
         </>
     )
