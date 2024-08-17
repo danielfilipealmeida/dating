@@ -19,3 +19,12 @@ services:
     restart: always
     ports:
       - 8080:8080
+
+  file-server:
+    image: busybox
+    ports: 
+      - 3001:3001
+    volumes:
+      - ./data/uploads:/www
+    command: busybox httpd -f -v -p 3001 -h /www
+

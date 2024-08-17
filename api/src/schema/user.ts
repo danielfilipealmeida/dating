@@ -251,15 +251,4 @@ builder.mutationFields((t) => ({
       return updateResult
     }
   }),
-  uploadImage: t.prismaField({
-    type: 'File',
-    args: {
-      userId: t.int({required: true}),
-      data: t.
-    },
-    resolve: async(query, parent, args) => {
-      console.log(args)
-      return null
-    }
-  })
 }))
