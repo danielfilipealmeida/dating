@@ -51,8 +51,17 @@ builder.prismaObject('User', {
         return new UserPreferencesOutput(data.preferences.distance || 20 , data.preferences.sex)
         return data
       }
-    })
+    }),
+    pictures: t.relation('pictures')
   }),
+})
+
+builder.prismaObject('File', {
+  fields: (t) => ({
+    id: t.exposeID('id'),
+    path: t.exposeString('path'),
+    user: t.relation('user')
+  })
 })
 
 export const UserUniqueInput = builder.inputType('UserUniqueInput', {
@@ -240,6 +249,17 @@ builder.mutationFields((t) => ({
       })
 
       return updateResult
+    }
+  }),
+  uploadImage: t.prismaField({
+    type: 'File',
+    args: {
+      userId: t.int({required: true}),
+      data: t.
+    },
+    resolve: async(query, parent, args) => {
+      console.log(args)
+      return null
     }
   })
 }))

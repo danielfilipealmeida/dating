@@ -30,7 +30,17 @@ model User {
   sex Sex?
   preferences Json?
 
+  pictures  File[]
+
   coords Unsupported("geometry(Point, 4326)")?
 
   @@index([coords], name: "location_idx", type: Gist)
+}
+
+model File {
+  id      Int     @id @default(autoincrement())
+  path    String @unique
+
+  user    User @relation(fields: [userId], references: [id])
+  userId  Int
 }
