@@ -16,6 +16,7 @@ type File {
 }
 
 type Mutation {
+  addFile(path: String, url: String, userId: ID): File
   setUserData(data: SetUserDataInput!): User
   setUserLocation(data: SetUserLocationInput!): User
   signupUser(data: UserCreateInput!): User

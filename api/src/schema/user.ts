@@ -251,4 +251,34 @@ builder.mutationFields((t) => ({
       return updateResult
     }
   }),
+  addFile: t.prismaField({
+    type: "File",
+    args: {
+      userId: t.id({required: true}),
+      url: t.string({required: true}),
+      path: t.string({requierd: true})
+    },
+    resolve: async (query, parent,args) => {
+      // check if the user has less than the max number of allowed files
+      const user = await prisma.user.findFirstOrThrow({
+        where: {
+          id:  parseInt(args.userId)
+        },
+        include: {
+          pictures: true
+        }
+      })
+      if (user.pictures.length >= process.env.MAX_PICTURES_PER_USER) {
+        throw new Error("User already uploaded allowed all pictures")
+      }
+
+      return prisma.file.create({
+        ...query,
+        data: {
+          userId: parseInt(args.userId),
+          path: args.path
+        }
+      })   
+    }
+  })
 }))
