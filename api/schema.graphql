@@ -17,6 +17,7 @@ type File {
 
 type Mutation {
   addFile(path: String, url: String, userId: ID): File
+  removeFile(id: ID, userId: ID): Boolean
   setUserData(data: SetUserDataInput!): User
   setUserLocation(data: SetUserLocationInput!): User
   signupUser(data: UserCreateInput!): User

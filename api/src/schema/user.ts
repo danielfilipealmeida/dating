@@ -14,8 +14,8 @@ builder.enumType(Sex, {
 
 builder.inputType('UserPreferences', {
   fields: (t) => ({
-    distance: t.int({required: true}),
-    sex: t.stringList({required: true})
+    distance: t.int({ required: true }),
+    sex: t.stringList({ required: true })
   })
 })
 
@@ -23,18 +23,18 @@ class UserPreferencesOutput {
   distance: number;
   sex: string[];
 
-  constructor(distance: number, sex:string[]) {
+  constructor(distance: number, sex: string[]) {
     this.distance = distance || 20;
     this.sex = sex || [];
   }
 }
-  
+
 builder.objectType(UserPreferencesOutput, {
   name: 'UserPreferencesOutput',
   description: "the configuration of the search of a user",
-  fields: (t) => ({
-    distance: t.int({required: true}),
-    sex: t.stringList({required: true})
+  fields: (t) => ({
+    distance: t.int({ required: true }),
+    sex: t.stringList({ required: true })
   }),
 })
 
@@ -48,7 +48,7 @@ builder.prismaObject('User', {
     preferences: t.field({
       type: 'UserPreferencesOutput',
       resolve: (data) => {
-        return new UserPreferencesOutput(data.preferences.distance || 20 , data.preferences.sex)
+        return new UserPreferencesOutput(data.preferences.distance || 20, data.preferences.sex)
         return data
       }
     }),
@@ -106,7 +106,7 @@ const AuthenticationResponse = builder.objectRef<{
 }>('AuthenticationResponse')
 AuthenticationResponse.implement({
   fields: (t) => ({
-    success: t.exposeBoolean('success'), 
+    success: t.exposeBoolean('success'),
     id: t.exposeID('id'),
     message: t.exposeString('message'),
   })
@@ -116,16 +116,18 @@ builder.queryFields((t) => ({
   authenticate: t.field({
     type: AuthenticationResponse,
     args: {
-      email: t.string({required: true}),
-      password: t.string({required: true})
+      email: t.string({ required: true }),
+      password: t.string({ required: true })
     },
     resolve: async (parent, args) => {
       try {
         const hashedPassword = hashString(args.password)
-        const data = await prisma.user.findUnique({where:{
-          email: args.email,
-          password: hashedPassword
-        }})
+        const data = await prisma.user.findUnique({
+          where: {
+            email: args.email,
+            password: hashedPassword
+          }
+        })
         if (!data) {
           throw new Error("Authentication failed")
         }
@@ -150,18 +152,18 @@ builder.queryFields((t) => ({
   user: t.prismaField({
     type: "User",
     args: {
-      id: t.id({required: true})
+      id: t.id({ required: true })
     },
     resolve: async (query, root, args, ctx) => {
-      const result = await prisma.user.findFirst({ where: { id: parseInt(args.id)}})
+      const result = await prisma.user.findFirst({ where: { id: parseInt(args.id) } })
       return result
     }
   }),
   people: t.prismaField({
     type: ['User'],
     args: {
-      id: t.id({required: true}),
-      radius: t.int({required: true})
+      id: t.id({ required: true }),
+      radius: t.int({ required: true })
     },
     resolve: async (query, root, args, ctx) => {
       /*
@@ -222,7 +224,7 @@ builder.mutationFields((t) => ({
     resolve: async (query, parent, args) => {
       const updateResult = await prisma.$executeRaw`UPDATE "User" SET coords=ST_SetSRID(ST_MakePoint(${args.data.longitude}, ${args.data.latitude}), 4326) WHERE id = ${args.data.id}::int`
 
-      return prisma.user.findUnique({where: {id: parseInt(args.data.id)}})
+      return prisma.user.findUnique({ where: { id: parseInt(args.data.id) } })
     },
   }),
   setUserData: t.prismaField({
@@ -254,15 +256,15 @@ builder.mutationFields((t) => ({
   addFile: t.prismaField({
     type: "File",
     args: {
-      userId: t.id({required: true}),
-      url: t.string({required: true}),
-      path: t.string({requierd: true})
+      userId: t.id({ required: true }),
+      url: t.string({ required: true }),
+      path: t.string({ requierd: true })
     },
-    resolve: async (query, parent,args) => {
+    resolve: async (query, parent, args) => {
       // check if the user has less than the max number of allowed files
       const user = await prisma.user.findFirstOrThrow({
         where: {
-          id:  parseInt(args.userId)
+          id: parseInt(args.userId)
         },
         include: {
           pictures: true
@@ -278,7 +280,32 @@ builder.mutationFields((t) => ({
           userId: parseInt(args.userId),
           path: args.path
         }
-      })   
+      })
+    }
+  }),
+  removeFile: t.field({
+    type: 'Boolean',
+    args: {
+      userId: t.id({ required: true }),
+      id: t.id({ required: true })
+    },
+    resolve: async (query, parent, args) => {
+      try {
+        const deletedFileRecord = await prisma.file.delete({
+          where: {
+            id: parseInt(args.params.variables.id),
+            userId: parseInt(args.params.variables.userId)
+          }
+        })
+
+        return deletedFileRecord &&
+          deletedFileRecord.userId == parseInt(args.params.variables.userId) &&
+          deletedFileRecord.id == parseInt(args.params.variables.id)
+      }
+      catch (err) {
+        console.log(err.message)
+        return false
+      }
     }
   })
 }))
