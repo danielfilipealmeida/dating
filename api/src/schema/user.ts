@@ -1,7 +1,8 @@
-import { QueryFieldBuilder } from '@pothos/core'
 import { builder } from '../builder'
 import { prisma } from '../db'
 import { hashString } from '../lib'
+import { getFileLocalPath } from './uploads'
+const fs = require('node:fs');
 
 export enum Sex {
   MALE,
@@ -274,6 +275,12 @@ builder.mutationFields((t) => ({
         throw new Error("User already uploaded allowed all pictures")
       }
 
+      // check if the file exists
+      const storePath = getFileLocalPath(args.path)
+      if (!fs.existsSync(storePath)) {
+        throw new Error("File doesn't exists.")
+      }
+        
       return prisma.file.create({
         ...query,
         data: {
@@ -283,7 +290,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  removeFile: t.field({
+  removeUserFile: t.field({
     type: 'Boolean',
     args: {
       userId: t.id({ required: true }),
@@ -291,6 +298,8 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, parent, args) => {
       try {
+            
+        // then, if it did not fail, delete the record
         const deletedFileRecord = await prisma.file.delete({
           where: {
             id: parseInt(args.params.variables.id),
@@ -298,6 +307,14 @@ builder.mutationFields((t) => ({
           }
         })
 
+        const storePath = getFileLocalPath(deletedFileRecord.path)
+        await fs.unlink(storePath, (err) => {
+          if (err) {
+            console.log(err.message)
+            return false
+          }
+        })
+       
         return deletedFileRecord &&
           deletedFileRecord.userId == parseInt(args.params.variables.userId) &&
           deletedFileRecord.id == parseInt(args.params.variables.id)

@@ -3,10 +3,20 @@
 import { builder } from '../builder'
 const fs = require('node:fs');
 
-
 const ALLOWED_FILETYPES = [
     'image/jpeg'
 ]
+
+/**
+ * Calculates the relative location of a file that served by the static file server to the api
+ * This is used for placing uploaded files to the api in a accessible location to the static
+ * file server running in a docker container and implemented with BusyBox httpd
+ * @param filePath 
+ * @returns 
+ */
+export const getFileLocalPath = (filePath: string): string => {
+    return `../data/uploads/${filePath}`
+}
 
 builder.scalarType('Upload', {
     serialize: () => { throw new Error('Upload scalar serialization not supported'); },
@@ -53,8 +63,11 @@ builder.mutationFields((t) => ({
             }
 
             const filename = file.name
+            // TODO: enhance the logic of the filePath structure and use future authentication
+            // futures and the user's data to set a folder per user.
+            // also, obfuscate the filename
             const filePath = filename
-            const storePath = `../data/uploads/${filePath}`
+            const storePath = getFileLocalPath(filePath)
             const url = `${process.env.FILESERVER_URL}/${filePath}`
             await fs.writeFile(storePath, file.blobParts[0], (err) => {
                 if (err) {
@@ -62,6 +75,7 @@ builder.mutationFields((t) => ({
                 }
             })
 
+            // returning url even though it isn't used
             return {
                 'path': filePath,
                 'url': url
