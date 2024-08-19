@@ -9,10 +9,19 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+type File {
+  id: ID
+  path: String
+  user: User
+}
+
 type Mutation {
+  addFile(path: String, url: String, userId: ID): File
+  removeUserFile(id: ID, userId: ID): Boolean
   setUserData(data: SetUserDataInput!): User
   setUserLocation(data: SetUserLocationInput!): User
   signupUser(data: UserCreateInput!): User
+  uploadFile(file: Upload!): UploadOutput
 }
 
 type Query {
@@ -40,11 +49,20 @@ enum Sex {
   MALE
 }
 
+scalar Upload
+
+"""The result of a file upload"""
+type UploadOutput {
+  path: String
+  url: String
+}
+
 type User {
   bio: String
   email: String
   id: Int
   name: String
+  pictures: [File!]
   preferences: UserPreferencesOutput
   sex: String
 }
