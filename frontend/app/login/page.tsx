@@ -11,7 +11,6 @@ export default function Login() {
     const router = useRouter()
     
     const handleForm = async (formData: FormData) => {
-        debugger
         const result = await authenticate(formData)
 
         if (result.success) {
