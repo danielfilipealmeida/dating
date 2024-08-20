@@ -1,10 +1,9 @@
+const assert = require('node:assert').strict;
 import { builder } from '../builder'
 import { prisma } from '../db'
-import { checkAuthTokenForSuperuser, getTokenData } from '../jwt';
+import { checkAuthTokenForSuperuser, getTokenData, getTokenFromAuthorizationHeader, generateToken } from '../jwt';
 import { hashString } from '../lib'
 import { getFileLocalPath } from './uploads'
-//import { generateToken } from '@utils/jwt'
-const { generateToken } = require('../jwt');
 const fs = require('node:fs');
 
 export enum Sex {
@@ -129,6 +128,24 @@ builder.queryFields((t) => ({
         console.error(err.message)
         throw new Error("Authentication failed")
       }
+    }
+  }),
+  refreshToken: t.field({
+    type: "String",
+    authScopes: {
+      isAuthenticated: true,
+    },
+    args: {
+      token: t.string({required: true}),
+      id: t.id({required: true}),
+    },
+    resolve: async (parent, args, context) => {
+      const {userId} = getTokenData(context)
+
+      assert.equal(parseInt(userId), parseInt(args.id))
+      assert.equal(args.token, getTokenFromAuthorizationHeader(context).split(" ")[1])
+
+      return generateToken({userId: args.id})
     }
   }),
   allUsers: t.prismaField({
