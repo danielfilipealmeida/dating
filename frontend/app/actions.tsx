@@ -201,7 +201,7 @@ export async function handleTokenRefreshAndExpiration(refresh_interval=10) {
         throw new Error("Token expired. Please login again!")
     }
 
-    // check if is isn't yet time to. converts the refresh interval from minutes to millisecodns
+    // check if is isn't yet time to. converts the refresh interval from minutes to milliseconds
     if (parseInt(Date.now() / 1000) < expire - (refresh_interval * 60)) {
         return
     }

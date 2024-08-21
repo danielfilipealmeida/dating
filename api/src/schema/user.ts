@@ -249,6 +249,10 @@ builder.mutationFields((t) => ({
   }),
   setUserData: t.prismaField({
     type: 'User',
+    authScopes: {
+      isAuthenticated: true,
+      superuser: true
+    },
     args: {
       data: t.arg({
         type: SetUserDataInput,
