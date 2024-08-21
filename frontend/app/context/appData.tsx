@@ -1,6 +1,8 @@
 'use client'
 
 import { createContext, useState } from "react";
+import { COOKIES } from "../enums";
+
 
 const AppDataContext = createContext({});
 
@@ -45,12 +47,13 @@ export function AppDataProvider({children}: {
   children: React.ReactNode
 }) {
   const [appData, setAppData] = useState(
-    
     typeof document === "undefined" ? {} :
     pickFromObject(
       parseCookiesString(document.cookie),
       [
-        "currentUser"
+        COOKIES.CurrentUser as unknown as string,
+        COOKIES.Token as unknown as string,
+        COOKIES.TokenExpiration as unknown as string,
       ]
     )
   )

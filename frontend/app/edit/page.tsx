@@ -25,7 +25,8 @@ export default function Edit() {
   
     useEffect(() => {
         setError(null)
-        getUserData(appData.currentUser).then((res) => {
+        
+        getUserData(appData.currentUser, appData.token).then((res) => {
             setData(res)
             setLoading(false)
         })

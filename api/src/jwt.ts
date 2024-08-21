@@ -42,7 +42,7 @@ export const getTokenData = (context): object => {
     try {
         const token: string | null = getTokenFromAuthorizationHeader(context)
         assert.equal(!!token, true)
-        assert.equal(token.split(" ")[0].toLowerCase(), 'bearing')
+        assert.equal(token.split(" ")[0].toLowerCase(), 'bearer')
 
         return verifyToken(token.split(" ")[1])
     }
