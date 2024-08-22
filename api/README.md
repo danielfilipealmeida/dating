@@ -3,7 +3,7 @@
 ## Seeding the DB
 
 ```shell
-npx run db seed
+npx prisma db seed   
 ```
 
 ## Links
