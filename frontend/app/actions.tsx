@@ -1,6 +1,6 @@
 "use server"
 
-import client from "@/app/lib/apolloClient";
+import client from "../app/lib/apolloClient";
 import gql from "graphql-tag";
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
