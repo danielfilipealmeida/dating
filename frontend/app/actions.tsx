@@ -6,7 +6,12 @@ import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 import { COOKIES } from "./enums";
 
-
+/**
+ * Server action responsible for signin up a new user.
+ * Will call the SignupUser graphql mutation
+ * @param formData 
+ * @returns 
+ */
 export async function signUp(formData: FormData) {
     try {
          const { data } = await client.mutate({
@@ -34,7 +39,15 @@ export async function signUp(formData: FormData) {
     }  
 }
 
-
+/**
+ * Server-action for handling user authentication.
+ * Will send email and password and get an updated token if the credentials are correct.
+ * This token is used for all the other grapqhl operations when a user is required to be logged in.
+ * If authentication fails, also removes the cookies
+ *  
+ * @param formData 
+ * @returns 
+ */
 export async function authenticate(formData: FormData) {
     try {
         const { data } = await client.query({
@@ -63,9 +76,13 @@ export async function authenticate(formData: FormData) {
         }
     }
     catch(err: any) {
+        console.error(err.message)
+        // delete all user and token related cookies just in case
+        logout()
+
         return {
             success: false,
-            message: err.message
+            message: "Login failed"
         }
     }
 }
@@ -104,6 +121,11 @@ export async function getUserData(id: number, token: string) {
     }
 }
 
+/**
+ * Server action responsible for updating User's data.
+ * @param formData 
+ * @returns 
+ */
 export async function updateUserData(formData:FormData) {
     try {
         const {data} = await client.mutate({
@@ -196,13 +218,13 @@ export async function handleTokenRefreshAndExpiration(refresh_interval=10) {
     const expire = parseInt((cookies().get(COOKIES.TokenExpiration)).value)
 
     // check as expired
-    if (parseInt(Date.now() / 1000) > expire) {
+    if ((Math.round(Date.now() / 1000)) > expire) {
         await logout()
         throw new Error("Token expired. Please login again!")
     }
 
     // check if is isn't yet time to. converts the refresh interval from minutes to milliseconds
-    if (parseInt(Date.now() / 1000) < expire - (refresh_interval * 60)) {
+    if (Math.round(Date.now() / 1000) < expire - (refresh_interval * 60)) {
         return
     }
 
