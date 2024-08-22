@@ -1,7 +1,10 @@
 // NOTE: import if we want to set the error message in the API
 // import { GraphQLError } from 'graphql';
 import { builder } from '../builder'
+import { getTokenData } from '../jwt';
 const fs = require('node:fs');
+const { createHash } = require('node:crypto');
+  
 
 const ALLOWED_FILETYPES = [
     'image/jpeg'
@@ -46,10 +49,15 @@ builder.objectType(UploadOutput, {
 builder.mutationFields((t) => ({
     uploadFile: t.field({
         type: UploadOutput,
+        authScopes: {
+            isAuthenticated: true,
+          },
         args: {
             file: t.arg({ type: 'Upload', required: true }),
         },
-        resolve: async (parent, { file }) => {
+        resolve: async (parent, { file }, context) => {
+            // get the user id from the token
+            const {userId} = getTokenData(context)
 
             if (ALLOWED_FILETYPES.filter((val) => val === file.type).length == 0) {
                 throw new Error("Filetype not allowed")
@@ -62,11 +70,20 @@ builder.mutationFields((t) => ({
                 //)
             }
 
+            // get the user folder from the user id
+            const hash = createHash('sha256');
+            hash.update(userId.toString())
+            const userFolder: string = hash.digest('hex')
+
+            // create user folder if it does not exist
+            const userLocalPath = getFileLocalPath(userFolder)
+            if (!fs.existsSync(userLocalPath)){
+                fs.mkdirSync(userLocalPath);
+            }
+
             const filename = file.name
-            // TODO: enhance the logic of the filePath structure and use future authentication
-            // futures and the user's data to set a folder per user.
-            // also, obfuscate the filename
-            const filePath = filename
+            // TODO: obfuscate the filename
+            const filePath = `${userFolder}/${filename}`
             const storePath = getFileLocalPath(filePath)
             const url = `${process.env.FILESERVER_URL}/${filePath}`
             await fs.writeFile(storePath, file.blobParts[0], (err) => {
@@ -74,6 +91,8 @@ builder.mutationFields((t) => ({
                     throw new Error(`Error uploading file: ${err.message}`)
                 }
             })
+
+            console.log(`File uploaded to ${filePath} for user ${userId}.`)
 
             // returning url even though it isn't used
             return {
