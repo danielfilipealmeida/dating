@@ -1,4 +1,4 @@
-import { parseCookiesString, pickFromObject } from '../app/context/appData'
+import { parseCookiesString, pickFromObject } from '../../app/context/appData'
 import { expect, describe, it } from 'vitest'
 
 describe('AppData', () => {

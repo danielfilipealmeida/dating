@@ -1,5 +1,7 @@
+const assert = require('node:assert').strict;
 import { builder } from '../builder'
 import { prisma } from '../db'
+import { checkAuthTokenForSuperuser, getTokenData, getTokenFromAuthorizationHeader, generateToken } from '../jwt';
 import { hashString } from '../lib'
 import { getFileLocalPath } from './uploads'
 const fs = require('node:fs');
@@ -100,22 +102,9 @@ const SetUserDataInput = builder.inputType('SetUserDataInput', {
   })
 })
 
-const AuthenticationResponse = builder.objectRef<{
-  success: boolean,
-  id?: number,
-  message?: string
-}>('AuthenticationResponse')
-AuthenticationResponse.implement({
-  fields: (t) => ({
-    success: t.exposeBoolean('success'),
-    id: t.exposeID('id'),
-    message: t.exposeString('message'),
-  })
-})
-
 builder.queryFields((t) => ({
   authenticate: t.field({
-    type: AuthenticationResponse,
+    type: "String",
     args: {
       email: t.string({ required: true }),
       password: t.string({ required: true })
@@ -132,41 +121,71 @@ builder.queryFields((t) => ({
         if (!data) {
           throw new Error("Authentication failed")
         }
-        return {
-          success: true,
-          id: data.id,
-          message: "Successful Authentication"
-        }
+
+         return generateToken({userId: data.id})
       }
       catch (err) {
-        return {
-          success: false,
-          message: err.message
-        }
+        console.error(err.message)
+        throw new Error("Authentication failed")
       }
+    }
+  }),
+  refreshToken: t.field({
+    type: "String",
+    authScopes: {
+      isAuthenticated: true,
+    },
+    args: {
+      token: t.string({required: true}),
+      id: t.id({required: true}),
+    },
+    resolve: async (parent, args, context) => {
+      const {userId} = getTokenData(context)
+
+      assert.equal(parseInt(userId), parseInt(args.id))
+      assert.equal(args.token, getTokenFromAuthorizationHeader(context).split(" ")[1])
+
+      return generateToken({userId: args.id})
     }
   }),
   allUsers: t.prismaField({
     type: ['User'],
+    authScopes: {
+      superuser: true
+    },
     resolve: (query) => prisma.user.findMany({ ...query }),
   }),
   user: t.prismaField({
     type: "User",
+    authScopes: {
+      isAuthenticated: true,
+      superuser: true
+    },
     args: {
       id: t.id({ required: true })
     },
-    resolve: async (query, root, args, ctx) => {
+    resolve: async (query, root, args, context) => {
       const result = await prisma.user.findFirst({ where: { id: parseInt(args.id) } })
       return result
     }
   }),
   people: t.prismaField({
     type: ['User'],
+    authScopes: {
+      isAuthenticated: true,
+      superuser: true
+    },
     args: {
       id: t.id({ required: true }),
       radius: t.int({ required: true })
     },
-    resolve: async (query, root, args, ctx) => {
+    resolve: async (query, root, args, context) => {
+      if (!checkAuthTokenForSuperuser(context)) {
+        const {userId} = getTokenData(context)
+        if (userId!=args.id) {
+          throw new Error('Access denied, cannot read information of another user')
+        }
+      }
       /*
       Todo:
       - create a table with a list of possible connections
@@ -230,6 +249,10 @@ builder.mutationFields((t) => ({
   }),
   setUserData: t.prismaField({
     type: 'User',
+    authScopes: {
+      isAuthenticated: true,
+      superuser: true
+    },
     args: {
       data: t.arg({
         type: SetUserDataInput,
@@ -310,7 +333,7 @@ builder.mutationFields((t) => ({
         const storePath = getFileLocalPath(deletedFileRecord.path)
         await fs.unlink(storePath, (err) => {
           if (err) {
-            console.log(err.message)
+            console.error(err.message)
             return false
           }
         })
@@ -320,7 +343,7 @@ builder.mutationFields((t) => ({
           deletedFileRecord.id == parseInt(args.params.variables.id)
       }
       catch (err) {
-        console.log(err.message)
+        console.error(err.message)
         return false
       }
     }
