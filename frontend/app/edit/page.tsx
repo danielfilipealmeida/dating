@@ -78,7 +78,7 @@ export default function Edit() {
                 <SelectField 
                         title="Sex"
                         name="preferences.sex"
-                        value={data?.preferences.sex}
+                        value={data?.preferences?.sex}
                         multiple={true}
                         options={{
                             "MALE": "Male",

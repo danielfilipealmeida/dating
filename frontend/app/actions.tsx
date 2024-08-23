@@ -101,6 +101,7 @@ export async function getUserData(id: number, token: string) {
                     email
                     id
                     name
+                    sex
                     bio
                     preferences {
                         sex

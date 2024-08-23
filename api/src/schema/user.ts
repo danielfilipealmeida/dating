@@ -51,8 +51,7 @@ builder.prismaObject('User', {
     preferences: t.field({
       type: 'UserPreferencesOutput',
       resolve: (data) => {
-        return new UserPreferencesOutput(data.preferences.distance || 20, data.preferences.sex)
-        return data
+        return new UserPreferencesOutput(data.preferences?.distance, data.preferences?.sex)
       }
     }),
     pictures: t.relation('pictures')
