@@ -2,8 +2,9 @@
 // import { GraphQLError } from 'graphql';
 import { builder } from '../builder'
 import { getTokenData } from '../jwt';
+import { createUserFolderIfNeeded, hashString } from '../lib';
+import { getUploadFileData, getUserFolder } from './utils';
 const fs = require('node:fs');
-const { createHash } = require('node:crypto');
   
 
 const ALLOWED_FILETYPES = [
@@ -70,22 +71,11 @@ builder.mutationFields((t) => ({
                 //)
             }
 
-            // get the user folder from the user id
-            const hash = createHash('sha256');
-            hash.update(userId.toString())
-            const userFolder: string = hash.digest('hex')
-
-            // create user folder if it does not exist
-            const userLocalPath = getFileLocalPath(userFolder)
-            if (!fs.existsSync(userLocalPath)){
-                fs.mkdirSync(userLocalPath);
-            }
-
-            const filename = file.name
+            const userFolder: string = hashString(userId.toString())
+            createUserFolderIfNeeded(userFolder)
             // TODO: obfuscate the filename
-            const filePath = `${userFolder}/${filename}`
-            const storePath = getFileLocalPath(filePath)
-            const url = `${process.env.FILESERVER_URL}/${filePath}`
+            const filename = file.name
+            const {filePath, storePath , url} = getUploadFileData(filename, userFolder)
             await fs.writeFile(storePath, file.blobParts[0], (err) => {
                 if (err) {
                     throw new Error(`Error uploading file: ${err.message}`)

@@ -9,7 +9,8 @@
     "build:schema": "ts-node src/schema/index.ts",
     "generate": "npm -s run generate:prisma",
     "generate:prisma": "prisma generate",
-    "migrate": "prisma migrate dev"
+    "migrate": "prisma migrate dev",
+    "test": "vitest"
   },
   "prettier": {
     "semi": false,
@@ -31,11 +32,12 @@
   "devDependencies": {
     "@types/bcryptjs": "2.4.6",
     "@types/jsonwebtoken": "9.0.6",
-    "@types/node": "20.14.12",
+    "@types/node": "^20.14.12",
     "prisma": "5.16.1",
     "ts-node": "10.9.2",
     "ts-node-dev": "2.0.0",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "vitest": "^2.0.5"
   },
   "prisma": {
     "seed": "ts-node --transpile-only prisma/seed.ts"
