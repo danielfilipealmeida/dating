@@ -164,7 +164,12 @@ builder.queryFields((t) => ({
       id: t.id({ required: true })
     },
     resolve: async (query, root, args, context) => {
-      const result = await prisma.user.findFirst({ where: { id: parseInt(args.id) } })
+      const result = await prisma.user.findFirst({
+         where: { id: parseInt(args.id) } ,
+         include: {
+          pictures: true
+         }
+        })
       return result
     }
   }),

@@ -36,12 +36,14 @@ if(isLoading) return <p>Loading...</p>
 
 return (
   <main className="flex min-h-screen flex-col items-center justify-between p-24">  
-    <Button label={"Logout"} onClick={handleLogout}/>
-
+    
     {error && (
         <Warning>{error}</Warning>
     )}
 
     <Profile data={data}/>
+
+    <Button label={"Logout"} onClick={handleLogout}/>
+
   </main>)
 }

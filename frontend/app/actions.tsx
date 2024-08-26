@@ -107,6 +107,9 @@ export async function getUserData(id: number, token: string) {
                         sex
                         distance
                     }
+                    pictures {
+                        path
+                    }
                 }
             }`,
             variables: {
