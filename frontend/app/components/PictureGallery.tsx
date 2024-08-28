@@ -22,7 +22,7 @@ export default function PictureGallery({pictures} : PictureGalleryProps )  {
         const nextId = counter == pictures.length ? 1: (counter + 1)
         counter++
 
-        const arrowStyle = "rounded-full bg-orange-400 translate-y-[-50%] scale-[2] md:text-xl sm:text-base text-xs font-bold absolute top-1/2 text-white"
+        const arrowStyle = "rounded-full bg-orange-400 translate-y-[-50%] scale-[2] md:text-xl sm:text-base text-xs font-bold absolute top-1/2 text-white px-2"
         return (
             <div 
                 className="w-full h-full relative"
@@ -32,10 +32,10 @@ export default function PictureGallery({pictures} : PictureGalleryProps )  {
                     src={pictureUrl} width="100%"
                     className="w-full h-full object-cover "
                 />
-                <a href={`#${previousId}`} className={`${arrowStyle} left-5`}>
+                <a href={`#slide${previousId}`} className={`${arrowStyle} left-5`}>
                     &lt;
                 </a>
-                <a href={`#${nextId}`} className={`${arrowStyle} right-5`}>
+                <a href={`#slide${nextId}`} className={`${arrowStyle} right-5`}>
                     &gt;
                 </a>
             </div>
