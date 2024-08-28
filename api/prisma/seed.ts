@@ -67,7 +67,7 @@ async function main() {
     })
     console.log(`Created user with id: ${user.id}`)
 
-    add_random_image_to_user(user, images) 
+    await add_random_image_to_user(user, images) 
 
     await prisma.$executeRaw`UPDATE "User" SET coords=ST_SetSRID(ST_MakePoint(${u.longitude}, ${u.latitude}), 4326) WHERE id = ${user.id}::int`
     console.log(`Set coordinates for user with id: ${user.id}`)
@@ -91,7 +91,7 @@ main()
    * @param user 
    * @param images 
    */
-function add_random_image_to_user(user: object, images: object) {
+async function add_random_image_to_user(user: object, images: object) {
   const sex: string = user.sex
   const image:string = images[sex][Math.floor(Math.random()*images[sex].length)]
   const userFolder: string = hashString(user.id.toString())
@@ -100,7 +100,7 @@ function add_random_image_to_user(user: object, images: object) {
 
   fs.copyFileSync(`${IMAGE_ASSETS_RELATIVE_PATH}/${sex.toLowerCase()}/${image}`, storePath)
 
-  prisma.file.create({
+  await prisma.file.create({
     data: {
       userId: user.id,
       path: filePath

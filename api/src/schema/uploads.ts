@@ -3,7 +3,7 @@
 import { builder } from '../builder'
 import { getTokenData } from '../jwt';
 import { createUserFolderIfNeeded, hashString } from '../lib';
-import { getUploadFileData, getUserFolder } from './utils';
+import { getUploadFileData } from '../lib';
 const fs = require('node:fs');
   
 

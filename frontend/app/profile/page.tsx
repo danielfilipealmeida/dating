@@ -1,36 +1,49 @@
 'use client'
 
 import Button from "../components/Button"
-import { logout } from "../actions"
-import { useRouter } from "next/router"
-import { useContext } from "react"
+import { getUserData, logout } from "../actions"
+import { useContext, useEffect, useState } from "react"
 import AppDataContext from "../context/appData"
+import Profile from "../components/Profile"
 
-/*
-type Props = {
-    params: { id: string }
-    searchParams: { [key: string]: string | string[] | undefined }
-  }
-*/
 
-//export default function Page({params, searchParams} : Props) {
 export default function Page() {
-  //const {appData, setAppData} = useContext(AppDataContext)
-  const router = useRouter()
-    //console.log (params)
-    //console.log(searchParams)
-    const handleLogout = async () => {
-      await logout()
-      /*\
-      .then(() => {
-        router.push('/edit')
-      })
-      */
+  const {appData, setAppData} = useContext(AppDataContext)
+  const [data, setData] = useState({})
+  const [error, setError] = useState<string|null>(null)
+  const [isLoading, setLoading] = useState(true)
+      
+  const handleLogout = async () => {
+    await logout()
   }
+
+  useEffect(() => {
+    setError(null)
+    
+    getUserData(appData.currentUser, appData.token).then((res) => {
+      console.log(res)
+        setData(res)
+        setLoading(false)
+    })
+    .catch(err => {
+      
+      setError(error)
+    })
+}, [appData])
   
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">  
-      <Button label={"Logout"} onClick={handleLogout}/>
-    </main>
-  )
+if(isLoading) return <p>Loading...</p>
+
+
+return (
+  <main className="flex min-h-screen flex-col items-center justify-between p-24">  
+    
+    {error && (
+        <Warning>{error}</Warning>
+    )}
+
+    <Profile data={data}/>
+
+    <Button label={"Logout"} onClick={handleLogout}/>
+
+  </main>)
 }

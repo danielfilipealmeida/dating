@@ -15,8 +15,8 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">  
-      <H1>Dating Site</H1>
+    <main className="flex min-h-screen flex-col items-center justify-between">  
+      <H1 className="t-24">Dating Site</H1>
       <div className="bg-orange-600 text-white px-4 py-3 text-md font-normal w-1/2">
         <p className="m-2">This is the frontend of the dating site project, built using Next.js.</p>
         <p className="m-2">The frontend includes various pages and components for user interaction, allowing users to sign up, log in, edit profiles, view other profiles, vote on potential matches, and see their matches.</p>   
