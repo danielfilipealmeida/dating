@@ -35,7 +35,7 @@ if(isLoading) return <p>Loading...</p>
 
 
 return (
-  <main className="flex min-h-screen flex-col items-center justify-between p-24">  
+  <main className="container flex min-h-screen flex-col items-center justify-between p-24">  
     
     {error && (
         <Warning>{error}</Warning>

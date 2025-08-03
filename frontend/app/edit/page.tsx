@@ -58,7 +58,7 @@ export default function Edit() {
     if(isLoading) return <p>Loading...</p>
 
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <main className="container flex min-h-screen flex-col items-center justify-between p-24">
         <H1>Edit profile</H1>
         {message && (
             <Message>{message}</Message>
