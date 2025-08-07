@@ -2,7 +2,7 @@ import Select from "./Select"
 import TextArea from "./TextArea"
 import TextInput from "./TextInput"
 
-interface TextFieldProps {
+interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
     name: string
     title: string
     value?: string
@@ -19,7 +19,7 @@ export function FieldCaption({name, children} : {name: string, children: React.R
         >{children}</label>
     )
 }
-export function TextField({name, title, value, required, type}: TextFieldProps) {
+export function TextField({name, title, value, required, type, ...props}: TextFieldProps) {
     return (
         <>
             <FieldCaption name={name}>{title}</FieldCaption>
@@ -29,6 +29,7 @@ export function TextField({name, title, value, required, type}: TextFieldProps) 
                 type={type}
                 required={required} 
                 fullWidth={true}
+                {...props}
                 />
         </>
     )
@@ -59,7 +60,7 @@ export interface SelectFieldProps {
     title: string
     name: string
     value?: string
-    options: object
+    options: {[key: string]: string}
     multiple?: boolean
 }
 

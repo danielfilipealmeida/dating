@@ -3,22 +3,27 @@
 import { useContext, useEffect, useState } from "react"
 import AppDataContext from "../context/appData"
 import Warning from "../components/Warning";
-import TextInput from "../components/TextInput"
 import { H1 } from "../components/Headers"
-import TextArea from "../components/TextArea";
 import { SelectField, TextAreaField, TextField } from "../components/Fields";
-import Button from "../components/Button";
 import { getUserData, updateUserData } from "../actions";
 import SubmitButton from "../components/SubmitButton";
 import Message from "../components/Message";
 import Section from "../components/Section";
+import { AppDataContextType, AppData } from "../types/context";
 
-
+interface AppState {
+    name?: string;
+    bio?: string;
+    preferences?: { 
+           sex: string;
+              distance: string;
+    }
+} 
 
 export default function Edit() {
     const [error, setError] = useState<string|null>(null)
-    const {appData, setAppData} = useContext(AppDataContext)
-    const [data, setData] = useState({})
+    const {appData, setAppData} = useContext(AppDataContext) as AppDataContextType
+    const [data, setData] = useState<AppState>({})
     const [isLoading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [message, setMessage] = useState("")
@@ -37,7 +42,7 @@ export default function Edit() {
         setSubmitting(true)
         setError(null)
         try {
-            formData.set('id', appData.currentUser)
+            formData.set('id', String(appData.currentUser))
             updateUserData(formData).then((result)=>{
                 if (result.error) {
                     throw new Error(result.error)
@@ -48,7 +53,7 @@ export default function Edit() {
                 setError(reason.message)
             })
         }
-        catch(err) {
+        catch(err: any) {
             setError(err.message)
         }
 
@@ -69,12 +74,12 @@ export default function Edit() {
                 <Warning>{error}</Warning>
             )}
         
-            <Section title="User Information">
+            <Section title="User Information" name="user-info">
                 <TextField type="text" name="name" title="Name" value={data?.name} required />
                 <TextAreaField name="bio" title="Bio" value={data?.bio} required />
             </Section>
 
-            <Section title="Search Preferences">
+            <Section title="Search Preferences name" name="search-preferences">
                 <SelectField 
                         title="Sex"
                         name="preferences.sex"
