@@ -7,7 +7,7 @@ import AppDataContext from "../context/appData"
 import Profile from "../components/Profile"
 import Warning from "../components/Warning"
 import { AppDataContextType  } from "../types/context";
-
+import { UserData } from "../types/user"
 
 /**
  * This is the profile page of the dating site application.
@@ -17,7 +17,7 @@ import { AppDataContextType  } from "../types/context";
  */
 export default function Page() {
   const {appData, setAppData} = useContext(AppDataContext) as AppDataContextType
-  const [data, setData] = useState({})
+  const [data, setData] = useState<UserData|null>(null)
   const [error, setError] = useState<string|null>(null)
   const [isLoading, setLoading] = useState(true)
       
@@ -38,7 +38,7 @@ export default function Page() {
     })
 }, [appData])
   
-if(isLoading) return <p>Loading...</p>
+if(isLoading || !data) return <p>Loading...</p>
 
 return (
   <main className="flex min-h-screen flex-col items-center justify-between p-24">  
