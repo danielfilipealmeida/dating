@@ -32,6 +32,12 @@ export const getFileLocalPath = (filePath: string): string => {
     return `../data/uploads/${filePath}`
 }
 
+export interface UploadFileData {
+    filePath: string;
+    storePath: string;
+    url: string;
+}
+
 /**
  * Extract needed paths and url from filename and userFolder
  * These values will be used to store the uploaded/seeded image file for a given user 
@@ -42,7 +48,7 @@ export const getFileLocalPath = (filePath: string): string => {
 export const getUploadFileData = (
     filename: string, 
     userFolder: string
-): object => {
+): UploadFileData => {
     const filePath = `${userFolder}/${filename}`
     const storePath = getFileLocalPath(filePath)
     const url = `${process.env.FILESERVER_URL}/${filePath}`

@@ -21,13 +21,13 @@ export function verifyToken(token: string): any {
  * @param context 
  * @returns 
  */
-export const getTokenFromAuthorizationHeader = (context): string | null => {
+export const getTokenFromAuthorizationHeader = (context: any): string | null => {
     try {
         const token: string = context.request.headers.get('authorization')
         assert.equal(!!token, true)
         return token
     }
-    catch (err) {
+    catch (err: any) {
         console.error(err.message)
         return null
     }
@@ -38,15 +38,15 @@ export const getTokenFromAuthorizationHeader = (context): string | null => {
  * @param context 
  * @returns 
  */
-export const getTokenData = (context): object => {
+export const getTokenData = (context: any): object|null => {
     try {
         const token: string | null = getTokenFromAuthorizationHeader(context)
         assert.equal(!!token, true)
-        assert.equal(token.split(" ")[0].toLowerCase(), 'bearer')
+        assert.equal(token!.split(" ")[0].toLowerCase(), 'bearer')
 
-        return verifyToken(token.split(" ")[1])
+        return verifyToken(token!.split(" ")[1])
     }
-    catch (err) {
+    catch (err: any) {
         console.error(err.message)
 
         return null
@@ -59,7 +59,7 @@ export const getTokenData = (context): object => {
  * @param context 
  * @returns 
  */
-export const checkAuthTokenForSuperuser = (context): bool => {
+export const checkAuthTokenForSuperuser = (context: any): Boolean | null => {
     const token = getTokenFromAuthorizationHeader(context)
     if (!token) {
         return null

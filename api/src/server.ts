@@ -10,7 +10,7 @@ const yoga = createYoga({
       req,
     }
   },
-  graphqlUpload: true
+  //graphqlUpload: true
 })
 
 const server = createServer(yoga)

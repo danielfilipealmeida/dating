@@ -5,6 +5,7 @@ import { DateTimeResolver } from 'graphql-scalars'
 import { prisma } from './db'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth';
 import { checkAuthTokenForSuperuser, getTokenData } from './jwt'
+import { TokenDataType } from './schema/user'
 
 
 export const builder = new SchemaBuilder<{
@@ -14,6 +15,8 @@ export const builder = new SchemaBuilder<{
   }
   AuthScopes: {
     public: boolean,
+    isAuthenticated: boolean,
+    superuser: boolean
   }
   Scalars: {
     DateTime: {
@@ -28,9 +31,10 @@ export const builder = new SchemaBuilder<{
   },
   scopeAuth: {
     authScopes: async (context) => {
-      const {userId} = getTokenData(context)
+      const {userId} = getTokenData(context) as TokenDataType
       const isSuperUser = checkAuthTokenForSuperuser(context)
       return {
+        public: true,
         isAuthenticated: !!userId || isSuperUser,
         superuser: isSuperUser
       }
