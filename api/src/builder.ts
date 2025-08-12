@@ -41,8 +41,8 @@ export const builder = new SchemaBuilder<{
       const isSuperUser = checkAuthTokenForSuperuser(context)
       return {
         public: true,
-        isAuthenticated: !!userId || isSuperUser,
-        superuser: isSuperUser
+        isAuthenticated: !!userId || !!isSuperUser,
+        superuser: !!isSuperUser
       }
     }
   }
