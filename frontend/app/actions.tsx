@@ -64,12 +64,7 @@ export async function authenticate(formData: FormData) {
             throw new Error("Authentication failed")
         }
         
-        const parsedTokens = jwt.verify(data.authenticate, process.env.APP_SECRET)
-
-        // set the cookies
-        cookies().set(COOKIES.Token as unknown as string, data.authenticate)
-        cookies().set(COOKIES.TokenExpiration as unknown as string, parsedTokens.exp)
-        cookies().set(COOKIES.CurrentUser as unknown as string, parsedTokens.userId)
+        parseAndStoreTokenData(data.authenticate);
 
         return {
             success: true
@@ -84,6 +79,28 @@ export async function authenticate(formData: FormData) {
             success: false,
             message: "Login failed"
         }
+    }
+}
+
+/**
+ * Extracts the token from the data received from the server and stores it in the cookies.
+ * Also extracts the expiration time and the user id from the token and stores them in cookies.
+ * This is used for the user authentication and authorization. 
+ * @param {string} data - the token received from the server
+ * @returns {void}
+ * @throws {Error} if the token is invalid or expired
+ */
+function parseAndStoreTokenData(data: string) {
+    const parsedTokens = jwt.verify(data, process.env.APP_SECRET as jwt.Secret);
+
+    // set the cookies
+    cookies().set(COOKIES.Token, data);
+    if (typeof parsedTokens === "object" &&
+        parsedTokens !== null &&
+        "exp" in parsedTokens &&
+        "userId" in parsedTokens) {
+        cookies().set(COOKIES.TokenExpiration, String(parsedTokens.exp));
+        cookies().set(COOKIES.CurrentUser, String(parsedTokens.userId));
     }
 }
 
@@ -119,8 +136,8 @@ export async function getUserData(id: number, token: string) {
         
         return data.user
     }
-    catch(err) {
-        console.error(err.message)
+    catch(err: any) {
+        console.error(err.message as string)
         return {}
     }
 }
@@ -151,7 +168,7 @@ export async function updateUserData(formData:FormData) {
                     name: formData.get('name'),
                     preferences: {
                         sex: formData.getAll('preferences.sex'),
-                        distance: parseInt(formData.get('preferences.distance')),
+                        distance: parseInt((formData.get('preferences.distance') ?? Number(process.env.DEFAULT_RADIUS)).toString()),
                     }
                 }
             }
@@ -159,8 +176,8 @@ export async function updateUserData(formData:FormData) {
         
         return data.setUserData
     }
-    catch(err) {
-        console.log(err.message)
+    catch(err: any) {
+        console.log(err.message as string)
         return {
             error: "Error updating User"
         }
@@ -168,7 +185,8 @@ export async function updateUserData(formData:FormData) {
 }
 
 /**
- * 
+ * Refreshes the token for the user.
+ * This is done by calling the RefreshToken graphql query. 
  * @param token 
  * @param userId 
  */
@@ -184,14 +202,10 @@ export async function refreshToken(token: string, userId: number) {
             }
         })
 
-        const parsedTokens = jwt.verify(data.refreshToken, process.env.APP_SECRET)
-
-        cookies().set(COOKIES.Token as unknown as string, data.refreshToken)
-        cookies().set(COOKIES.TokenExpiration as unknown as string, parsedTokens.exp)
-        cookies().set(COOKIES.CurrentUser as unknown as string, parsedTokens.userId)
+        parseAndStoreTokenData(data.refreshToken);
     }
-    catch(err) {
-        console.error(err.message)
+    catch(err: any) {
+        console.error(err.message as string)
         logout()
     }
 }
@@ -219,7 +233,12 @@ export async function logout() {
  * @returns 
  */
 export async function handleTokenRefreshAndExpiration(refresh_interval=10) {
-    const expire = parseInt((cookies().get(COOKIES.TokenExpiration)).value)
+    const tokenExpirationCookie = cookies().get(COOKIES.TokenExpiration);
+    if (!tokenExpirationCookie || !tokenExpirationCookie.value) {
+        await logout();
+        throw new Error("Token expiration not found. Please login again!");
+    }
+    const expire = parseInt(tokenExpirationCookie.value);
 
     // check as expired
     if ((Math.round(Date.now() / 1000)) > expire) {
@@ -232,8 +251,16 @@ export async function handleTokenRefreshAndExpiration(refresh_interval=10) {
         return
     }
 
-    const token = (cookies().get(COOKIES.Token)).value
-    const userId = (cookies().get(COOKIES.CurrentUser)).value
+    const tokenCookie = cookies().get(COOKIES.Token);
+    const userIdCookie = cookies().get(COOKIES.CurrentUser);
+
+    if (!tokenCookie || !tokenCookie.value || !userIdCookie || !userIdCookie.value) {
+        await logout();
+        throw new Error("Token or user ID not found. Please login again!");
+    }
+
+    const token = tokenCookie.value;
+    const userId = userIdCookie.value;
 
     // refresh the token
     await refreshToken(token, parseInt(userId))

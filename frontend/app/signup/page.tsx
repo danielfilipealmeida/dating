@@ -9,10 +9,11 @@ import AppDataContext from "../context/appData";
 import { signUp } from "../actions";
 import { SelectField, TextField } from "../components/Fields";
 import SubmitButton from "../components/SubmitButton";
+import { AppDataContextType } from "../types/context";
 
 export default function SignUp() {    
     const [error, setError] = useState<string|null>(null)
-    const {appData, setAppData} = useContext(AppDataContext)
+    const {appData, setAppData} = useContext(AppDataContext) as AppDataContextType
     const router = useRouter()
     const [submitting, setSubmitting] = useState(false)
 

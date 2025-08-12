@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import {H1} from '../app/components/Headers'
 
 const meta: Meta<typeof H1> = {

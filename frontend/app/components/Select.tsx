@@ -3,7 +3,7 @@ import { SHARED_FIELD_CLASSES } from "./TextInput"
 export interface SelectProps {
     name: string
     value: string
-    options: object
+    options: { [key: string]: string }
     fullWidth?: boolean
     multiple?: boolean
 }

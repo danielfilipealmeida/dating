@@ -16,7 +16,7 @@ export const parseCookiesString = (cookies: string): object => {
   const splittedCookies = cookies.split(';').map(cookie => {
     return cookie.trim().split('=')
   })
-  let result = {}
+  let result: { [key: string]: any } = {}
 
   splittedCookies.forEach((value) => {
     const parsedValue = +value[1]
@@ -33,14 +33,17 @@ export const parseCookiesString = (cookies: string): object => {
  * @param elementsToKeep 
  * @returns 
  */
-export const pickFromObject = (input: object, elementsToKeep: string[]): object => {
-  let result = {}
+export const pickFromObject = (
+  input: { [key: string]: any },
+  elementsToKeep: string[]
+): object => {
+  let result: { [key: string]: any } = {};
   Object.keys(input).forEach((value: string) => {
     if (elementsToKeep.includes(value)) {
-      result[value] = input[value]
+      result[value] = input[value];
     }
-  })
-  return result
+  });
+  return result;
 }
 
 export function AppDataProvider({children}: {

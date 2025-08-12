@@ -9,21 +9,47 @@ type File {
   user: User
 }
 
+"""The result of a file upload"""
+type FileUploadOutput {
+  """
+  A message describing the result of the file upload in human readable form
+  """
+  message: String!
+
+  """The local path of the uploaded file, if available"""
+  path: String
+
+  """Indicates if the file upload was successful"""
+  success: Boolean!
+
+  """The URL of the uploaded file, if available"""
+  url: String
+}
+
+"""A file upload"""
+scalar GraphQLFile
+
 type Mutation {
-  addFile(path: String, url: String, userId: ID): File
-  removeUserFile(id: ID, userId: ID): Boolean
+  addFile(path: String!, url: String!, userId: ID!): File
+  removeUserFile(id: ID!, userId: ID!): Boolean
   setUserData(data: SetUserDataInput!): User
   setUserLocation(data: SetUserLocationInput!): User
   signupUser(data: UserCreateInput!): User
-  uploadFile(file: Upload!): UploadOutput
+  uploadFile(file: GraphQLFile!): FileUploadOutput
+}
+
+type PrismaFile {
+  id: ID
+  path: String
+  user: User
 }
 
 type Query {
   allUsers: [User!]
   authenticate(email: String, password: String): String
-  people(id: ID, radius: Int): [User!]
-  refreshToken(id: ID, token: String): String
-  user(id: ID): User
+  people(id: ID!, radius: Int!): [User!]
+  refreshToken(id: ID!, token: String): String
+  user(id: ID!): User
 }
 
 input SetUserDataInput {
@@ -44,14 +70,6 @@ enum Sex {
   MALE
 }
 
-scalar Upload
-
-"""The result of a file upload"""
-type UploadOutput {
-  path: String
-  url: String
-}
-
 type User {
   bio: String
   email: String
@@ -69,8 +87,8 @@ input UserCreateInput {
 }
 
 input UserPreferences {
-  distance: Int!
-  sex: [String!]!
+  distance: Int
+  sex: [String!]
 }
 
 """the configuration of the search of a user"""

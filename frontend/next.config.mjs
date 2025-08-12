@@ -12,7 +12,17 @@ const nextConfig = {
             ]
         })
         return config
-    }
+    },
+    images: {
+        remotePatterns:[
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+                port: '3001',
+                pathname: '/**',
+            },
+        ]
+    },
 };
 
 export default nextConfig;

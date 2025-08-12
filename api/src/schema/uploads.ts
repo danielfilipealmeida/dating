@@ -1,15 +1,11 @@
-// NOTE: import if we want to set the error message in the API
-// import { GraphQLError } from 'graphql';
 import { builder } from '../builder'
-import { getTokenData } from '../jwt';
-import { createUserFolderIfNeeded, hashString } from '../lib';
-import { getUploadFileData } from '../lib';
+import { createUserFolderIfNeeded, hashString, getUploadFileData, getUserIdFromToken } from '../lib';
 const fs = require('node:fs');
-  
+import { createReadStream } from 'fs';  
 
 const ALLOWED_FILETYPES = [
     'image/jpeg'
-]
+];
 
 /**
  * Calculates the relative location of a file that served by the static file server to the api
@@ -20,76 +16,104 @@ const ALLOWED_FILETYPES = [
  */
 export const getFileLocalPath = (filePath: string): string => {
     return `../data/uploads/${filePath}`
-}
+};
 
-builder.scalarType('Upload', {
-    serialize: () => { throw new Error('Upload scalar serialization not supported'); },
-    parseValue: (value) => value,
-    parseLiteral: () => { throw new Error('Upload scalar literal unsupported'); },
-})
+/**
+ * Class representing the output of a file upload mutation.
+ * This class is used to return the result of a file upload mutation.
+ * It contains the success status, message, and optionally the path and URL of the uploaded file
+ */
+class FileUploadOutput {
+    success: boolean;
+    message: string;
+    path?: string;
+    url?: string;
 
-class UploadOutput {
-    path: String;
-    url: String
-
-    constructor(path: String, url: String) {
-        this.path = path
-        this.url = url
+    constructor(success: boolean, message: string, path?: string, url?: string) {
+        this.success = success;
+        this.message = message;
+        this.path = path;
+        this.url = url;
     }
 }
-    
-builder.objectType(UploadOutput, {
-    name: 'UploadOutput',
+
+builder.objectType(FileUploadOutput, {
+    name: 'FileUploadOutput',
     description: "The result of a file upload",
     fields: (t) => ({
-        path: t.string({ required: true }),
-        url: t.string({ required: true })
+        success: t.boolean({ 
+            nullable: false,
+            resolve: (u) => u.success, 
+            description: "Indicates if the file upload was successful" 
+        }),
+        message: t.string({ 
+            nullable: false,
+            resolve: (u) => u.message,
+            description: "A message describing the result of the file upload in human readable form" 
+        }),
+        path: t.string({ 
+            nullable: true,
+            resolve: (u) => u.path,
+            description: "The local path of the uploaded file, if available"
+        }),
+        url: t.string({ 
+            nullable: true,
+            resolve: (u) => u.url,
+            description: "The URL of the uploaded file, if available"
+        }),
     }),
-})
+});  
 
 builder.mutationFields((t) => ({
     uploadFile: t.field({
-        type: UploadOutput,
+        type: FileUploadOutput,
+        /*
         authScopes: {
             isAuthenticated: true,
-          },
+        },
+        */
         args: {
-            file: t.arg({ type: 'Upload', required: true }),
+            file: t.arg({type: 'GraphQLFile', required: true }),
         },
         resolve: async (parent, { file }, context) => {
-            // get the user id from the token
-            const {userId} = getTokenData(context)
-
-            if (ALLOWED_FILETYPES.filter((val) => val === file.type).length == 0) {
-                throw new Error("Filetype not allowed")
-                
-                // NOTE:
-                // to set the error directly on the API we can use GraphQLError
-                // see: https://the-guild.dev/graphql/yoga-server/tutorial/basic/09-error-handling
-                //return Promise.reject(
-                //    new GraphQLError("Filetype not allowed.")
-                //)
-            }
-
-            const userFolder: string = hashString(userId.toString())
-            createUserFolderIfNeeded(userFolder)
-            // TODO: obfuscate the filename
-            const filename = file.name
-            const {filePath, storePath , url} = getUploadFileData(filename, userFolder)
-            await fs.writeFile(storePath, file.blobParts[0], (err) => {
-                if (err) {
-                    throw new Error(`Error uploading file: ${err.message}`)
+            try {
+                const userId:number = getUserIdFromToken(context);
+                if (!userId) {
+                    throw new Error("User not authenticated");
                 }
-            })
+                if (ALLOWED_FILETYPES.filter((val) => val === file.type).length == 0) {
+                    throw new Error("Filetype not allowed");
+                }
 
-            console.log(`File uploaded to ${filePath} for user ${userId}.`)
+                const userFolder: string = hashString(userId.toString());
+                createUserFolderIfNeeded(userFolder);
 
-            // returning url even though it isn't used
-            return {
-                'path': filePath,
-                'url': url
+                const filename = file.name;
+                const { filePath, storePath, url } = getUploadFileData(filename, userFolder);
+                // @ts-expect-error TS2339
+                await fs.writeFile(storePath, Buffer.concat(file.blobParts), (err: any) => {
+                    if (err) {
+                        throw new Error(`Error uploading file: ${err.message}`);
+                    }
+                });
+
+                console.log(`File uploaded to ${filePath} for user ${userId}.`);
+
+                return {
+                    success: true,
+                    message: "File uploaded successfully.",
+                    url,
+                    path: filePath
+                };
             }
-        },
+            catch (error) {
+                console.error("Error uploading file:", error);
+
+                return {
+                    success:false,
+                    message: "Error uploading file."
+                };
+            }
+        }
     }),
 }));
-

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { hashString, getUploadFileData, getFileLocalPath } from '../lib'
+import { hashString, getUploadFileData, getFileLocalPath, UploadFileData } from '../lib'
 
 
 describe('hashString', () => {
@@ -23,10 +23,10 @@ describe('getUploadFileData', () => {
         const filename: string = "file.txt"
         const userFolder: string = "path/to"
         process.env.FILESERVER_URL = 'localhost:3000'
-        const {filePath, storePath , url} = getUploadFileData(filename, userFolder)
+        const {filePath, storePath , url}: UploadFileData = getUploadFileData(filename, userFolder)
 
-        expect(filePath).toBe("path/to/file.txt")
-        expect(storePath).toBe("../data/uploads/path/to/file.txt")
-        expect(url).toBe('localhost:3000/path/to/file.txt')
+        expect(filePath).toBe("path/to/" + hashString("file.txt"))
+        expect(storePath).toBe("../data/uploads/path/to/" + hashString("file.txt"))
+        expect(url).toBe("localhost:3000/path/to/" + hashString("file.txt"))
     })
 })
