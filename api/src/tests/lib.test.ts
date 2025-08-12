@@ -25,8 +25,8 @@ describe('getUploadFileData', () => {
         process.env.FILESERVER_URL = 'localhost:3000'
         const {filePath, storePath , url}: UploadFileData = getUploadFileData(filename, userFolder)
 
-        expect(filePath).toBe("path/to/file.txt")
-        expect(storePath).toBe("../data/uploads/path/to/file.txt")
-        expect(url).toBe('localhost:3000/path/to/file.txt')
+        expect(filePath).toBe("path/to/" + hashString("file.txt"))
+        expect(storePath).toBe("../data/uploads/path/to/" + hashString("file.txt"))
+        expect(url).toBe("localhost:3000/path/to/" + hashString("file.txt"))
     })
 })
