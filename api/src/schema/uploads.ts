@@ -22,7 +22,7 @@ export const getFileLocalPath = (filePath: string): string => {
     return `../data/uploads/${filePath}`
 }
 
-builder.scalarType('Upload', {
+const Upload = builder.scalarType('Upload', {
     serialize: () => { throw new Error('Upload scalar serialization not supported'); },
     parseValue: (value) => value,
     parseLiteral: () => { throw new Error('Upload scalar literal unsupported'); },
@@ -42,8 +42,8 @@ builder.objectType(UploadOutput, {
     name: 'UploadOutput',
     description: "The result of a file upload",
     fields: (t) => ({
-        path: t.string({ required: true }),
-        url: t.string({ required: true })
+        path: t.arg.string({ required: true }),
+        url: t.arg.string({ required: true })
     }),
 })
 
