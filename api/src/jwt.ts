@@ -38,7 +38,7 @@ export const getTokenFromAuthorizationHeader = (context: any): string | null => 
  * @param context 
  * @returns 
  */
-export const getTokenData = (context: any): object|null => {
+export const getTokenData = (context: any) : any => {
     try {
         const token: string | null = getTokenFromAuthorizationHeader(context)
         assert.equal(!!token, true)

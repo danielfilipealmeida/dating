@@ -4,6 +4,7 @@
 
 import { createHash } from 'node:crypto';
 const fs = require('node:fs');
+import { getTokenData } from './jwt';
   
 /**
  * Returns an hashed string.
@@ -49,7 +50,8 @@ export const getUploadFileData = (
     filename: string, 
     userFolder: string
 ): UploadFileData => {
-    const filePath = `${userFolder}/${filename}`
+    const mangledFilename = hashString(filename);
+    const filePath = `${userFolder}/${mangledFilename}`
     const storePath = getFileLocalPath(filePath)
     const url = `${process.env.FILESERVER_URL}/${filePath}`
 
@@ -61,4 +63,25 @@ export const createUserFolderIfNeeded = (userFolder: string) => {
     if (!fs.existsSync(userLocalPath)){
         fs.mkdirSync(userLocalPath);
     }
+}
+
+/**
+ * Extracts the userId from the context object.
+ * This is used to get the userId from the auth token in the context.
+ * This function assumes that the context object has a property `auth` with a property `tokenData` that contains the userId.
+ * If the userId is not present, it throws an error.
+ * @param context - the context object from the GraphQL resolver
+ * @returns 
+ */
+export const getUserIdFromToken = (context: any): number => {
+    const tokenData = getTokenData(context);
+
+    if (!tokenData) {
+         throw new Error("No token data");
+    }
+     if (!tokenData.userId) {
+         throw new Error("No user id in token data");
+    }
+
+    return tokenData.userId;
 }
