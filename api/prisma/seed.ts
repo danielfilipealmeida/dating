@@ -50,6 +50,8 @@ async function main() {
   console.log(`Clearing existing data...`);
   await prisma.user.deleteMany({});
   await prisma.file.deleteMany({});
+  await prisma.vote.deleteMany({});
+  console.log(`Existing data cleared.`);
   //removeContentsOfUploadsDirectory()
   
   const images = getImages()
@@ -69,7 +71,7 @@ async function main() {
 
     await add_random_image_to_user(user, images) 
 
-    await prisma.$executeRaw`UPDATE "User" SET coords=ST_SetSRID(ST_MakePoint(${u.longitude}, ${u.latitude}), 4326) WHERE id = ${user.id}::int`
+    await prisma.$executeRaw`UPDATE "User" SET coords=ST_SetSRID(ST_MakePoint(${u.longitude}, ${u.latitude}), 4326) WHERE id = ${user.id}::text`
     console.log(`Set coordinates for user with id: ${user.id}`)
   }
   console.log(`Seeding finished.`)

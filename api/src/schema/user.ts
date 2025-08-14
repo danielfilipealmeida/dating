@@ -1,4 +1,4 @@
-const assert = require('node:assert').strict;
+import assert = require('node:assert');
 import { $Enums } from '@prisma/client';
 import { builder } from '../builder'
 import { prisma } from '../db'
@@ -60,7 +60,7 @@ builder.objectType(UserPreferencesOutput, {
 
 const UserType = builder.prismaObject('User', {
   fields: (t) => ({
-    id: t.exposeInt('id'),
+    id: t.exposeID('id'),
     name: t.exposeString('name', { nullable: true }),
     email: t.exposeString('email'),
     bio: t.exposeString('bio'),
@@ -116,6 +116,15 @@ const SetUserDataInput = builder.inputType('SetUserDataInput', {
       type: UserPreferencesInput,
       required: true
     })
+  })
+})
+
+// Define the Vote input type
+const VoteInput = builder.inputType('VoteInput', {
+  fields: (t) => ({
+    voterId: t.id({ required: true }),
+    votedForId: t.id({ required: true }),
+    like: t.boolean({ required: true })
   })
 })
 
@@ -183,7 +192,7 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, root, args, context) => {
       const result = await prisma.user.findFirst({
-         where: { id: parseInt(args.id) } ,
+         where: { id: args.id } ,
          include: {
           pictures: true
          }
@@ -269,7 +278,7 @@ builder.mutationFields((t) => ({
     resolve: async (query, parent, args) => {
       const updateResult = await prisma.$executeRaw`UPDATE "User" SET coords=ST_SetSRID(ST_MakePoint(${args.data.longitude}, ${args.data.latitude}), 4326) WHERE id = ${args.data.id}::int`
 
-      return prisma.user.findUnique({ where: { id: parseInt(args.data.id) } })
+      return prisma.user.findUnique({ where: { id: args.data.id } })
     },
   }),
   setUserData: t.prismaField({
@@ -285,9 +294,9 @@ builder.mutationFields((t) => ({
       }),
     },
     resolve: async (query, parent, args) => {
-      const updateResult = prisma.user.update({
+      const updateResult = await prisma.user.update({
         where: {
-          id: parseInt(args.data.id)
+          id: args.data.id
         },
         data: {
           bio: args.data.bio,
@@ -313,7 +322,7 @@ builder.mutationFields((t) => ({
       // check if the user has less than the max number of allowed files
       const user = await prisma.user.findFirstOrThrow({
         where: {
-          id: parseInt(args.userId)
+          id: args.userId
         },
         include: {
           pictures: true
@@ -332,7 +341,7 @@ builder.mutationFields((t) => ({
       return prisma.file.create({
         ...query,
         data: {
-          userId: parseInt(args.userId),
+          userId: args.userId,
           path: args.path
         }
       })
@@ -350,8 +359,8 @@ builder.mutationFields((t) => ({
         // then, if it did not fail, delete the record
         const deletedFileRecord = await prisma.file.delete({
           where: {
-            id: parseInt(args.id),
-            userId: parseInt(args.userId)
+            id: args.id,
+            userId: args.userId
           }
         })
 
@@ -364,13 +373,13 @@ builder.mutationFields((t) => ({
         })
        
         return deletedFileRecord &&
-          deletedFileRecord.userId == parseInt(args.userId) &&
-          deletedFileRecord.id == parseInt(args.id)
+          deletedFileRecord.userId == args.userId &&
+          deletedFileRecord.id == args.id
       }
       catch (err: any) {
         console.error(err.message)
         return false
       }
     }
-  })
+  }),
 }))
