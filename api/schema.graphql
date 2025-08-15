@@ -36,6 +36,7 @@ type Mutation {
   setUserLocation(data: SetUserLocationInput!): User
   signupUser(data: UserCreateInput!): User
   uploadFile(file: GraphQLFile!): FileUploadOutput
+  vote(like: Boolean!, votedForId: String!, votedId: String!): Vote
 }
 
 type PrismaFile {
@@ -73,7 +74,7 @@ enum Sex {
 type User {
   bio: String
   email: String
-  id: Int
+  id: ID
   name: String
   pictures: [File!]
   preferences: UserPreferencesOutput
@@ -100,4 +101,17 @@ type UserPreferencesOutput {
 input UserUniqueInput {
   email: String
   id: Int
+}
+
+type Vote {
+  id: ID
+  like: Boolean
+  votedForId: String
+  voterId: String
+}
+
+input VoteInput {
+  like: Boolean!
+  votedForId: ID!
+  voterId: ID!
 }

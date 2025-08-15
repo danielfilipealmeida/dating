@@ -73,7 +73,7 @@ export const createUserFolderIfNeeded = (userFolder: string) => {
  * @param context - the context object from the GraphQL resolver
  * @returns 
  */
-export const getUserIdFromToken = (context: any): number => {
+export const getUserIdFromToken = (context: any): string => {
     const tokenData = getTokenData(context);
 
     if (!tokenData) {

@@ -1,5 +1,5 @@
 export interface AppData {
-  currentUser: number;
+  currentUser: string;
   token: string;
 }
 

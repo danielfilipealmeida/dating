@@ -22,7 +22,7 @@ enum Sex {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
+  id    String     @id @default(uuid())
   email String  @unique
   name  String?
   bio   String?
@@ -30,7 +30,14 @@ model User {
   sex Sex?
   preferences Json?
 
+  // all pictures of the user
   pictures  File[]
+
+  // Votes that this user has cast
+  votesCast Vote[] @relation("VotesCast")
+
+  // Votes that this user has received
+  votesReceived Vote[] @relation("VotesReceived")
 
   coords Unsupported("geometry(Point, 4326)")?
 
@@ -38,9 +45,18 @@ model User {
 }
 
 model File {
-  id      Int     @id @default(autoincrement())
+  id      String     @id @default(uuid())
   path    String @unique
 
   user    User @relation(fields: [userId], references: [id])
-  userId  Int
+  userId  String
 }
+
+model Vote {                                                                                                                                                                                                                             
+  id        String      @id @default(uuid())                                                                                                                                                                                       
+  voter     User     @relation("VotesCast", fields: [voterId], references: [id])
+  voterId   String                                                                                                                                                                      
+  votedFor     User     @relation("VotesReceived", fields: [votedForId], references: [id])       
+  votedForId   String                                                                                                                                                               
+  like      Boolean                                                                                                                                                                                                                      
+}        

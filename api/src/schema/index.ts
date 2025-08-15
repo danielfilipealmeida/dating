@@ -1,6 +1,7 @@
 import { builder } from '../builder'
 import './user'
 import './uploads'
+import './vote'
 import { writeFileSync } from 'fs'
 import { resolve } from 'path'
 import { printSchema } from 'graphql'

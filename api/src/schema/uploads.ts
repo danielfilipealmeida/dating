@@ -67,17 +67,15 @@ builder.objectType(FileUploadOutput, {
 builder.mutationFields((t) => ({
     uploadFile: t.field({
         type: FileUploadOutput,
-        /*
         authScopes: {
             isAuthenticated: true,
         },
-        */
         args: {
             file: t.arg({type: 'GraphQLFile', required: true }),
         },
         resolve: async (parent, { file }, context) => {
             try {
-                const userId:number = getUserIdFromToken(context);
+                const userId: string = getUserIdFromToken(context);
                 if (!userId) {
                     throw new Error("User not authenticated");
                 }

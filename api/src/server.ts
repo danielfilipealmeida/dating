@@ -1,6 +1,7 @@
 import { createYoga } from 'graphql-yoga'
 import { createServer } from 'http'
 import { schema } from './schema'
+import { GraphQLError } from 'graphql'
 
 const yoga = createYoga({
   graphqlEndpoint: '/',
@@ -9,9 +10,17 @@ const yoga = createYoga({
     return {
       req,
     }
+  },
+  maskedErrors: {
+    maskError(error: any, message: string) {
+      // If it's one of your known errors, preserve its message
+      if (error.originalError instanceof Error) {
+        return new GraphQLError(error.originalError.message);
+      }
+      // For unknown errors, show the generic message
+      return new GraphQLError(message);
+    }
   }
-  ,
-  //graphqlUpload: true
 })
 
 const server = createServer(yoga)
