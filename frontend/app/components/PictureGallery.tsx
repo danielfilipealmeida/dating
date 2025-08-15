@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { UserPicture } from "../types/user";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/solid";
 
 interface PictureGalleryProps {
   pictures: UserPicture[];
@@ -33,7 +34,7 @@ export default function PictureGallery({ pictures }: PictureGalleryProps) {
     counter++;
 
     const arrowStyle =
-      "rounded-full bg-orange-400 translate-y-[-50%] scale-[2] md:text-xl sm:text-base text-xs font-bold absolute top-1/2 text-white px-2";
+      "rounded-full bg-orange-400 translate-y-[-50%] scale-[2] md:text-xl sm:text-base text-xs font-bold absolute top-1/2 text-white px-2 py-1 hover:bg-orange-500 transition-colors duration-300";
     return (
       <div 
         className="w-full h-full relative" 
@@ -49,10 +50,10 @@ export default function PictureGallery({ pictures }: PictureGalleryProps) {
           style={{ width: "100%", height: "100%" }}
         />
         <a href={`#slide${previousId}`} className={`${arrowStyle} left-5`}>
-          &lt;
+          <ArrowLeftIcon className="h-5 w-5" />
         </a>
         <a href={`#slide${nextId}`} className={`${arrowStyle} right-5`}>
-          &gt;
+          <ArrowRightIcon className="h-5 w-5" />
         </a>
       </div>
     );

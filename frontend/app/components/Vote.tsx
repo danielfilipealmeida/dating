@@ -1,22 +1,7 @@
 import React, { useState } from 'react'
 import { vote } from '../actions' 
+import { CheckIcon, NoSymbolIcon } from '@heroicons/react/24/solid'
 
-
-//import { useMutation } from '@apollo/client'
-//import gql from 'graphql-tag'
-
-/*
-const VOTE_MUTATION = gql`
-  mutation Vote($voterId: ID!, $votedForId: ID!, $like: Boolean!) {
-    vote(votedId: $voterId, votedForId: $votedForId, like: $like) {
-      id
-      voterId
-      votedForId
-      like
-    }
-  }
-`
-*/
 
 interface VoteProps {
   votingUserId: string
@@ -24,7 +9,6 @@ interface VoteProps {
 }
 
 export default function Vote({ votingUserId, votedUserId }: VoteProps) {
-
   const handleLike = async () => {
     
     try {
@@ -50,15 +34,17 @@ export default function Vote({ votingUserId, votedUserId }: VoteProps) {
     <div>
       <button
         onClick={handleLike}
-        style={{ backgroundColor: 'green', color: 'white' }}
+        className='bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600'
       >
-        Thumbs Up
+        <CheckIcon className="h-5 w-5 inline-block mr-2" />
+        Like!
       </button>
       <button
         onClick={handleDislike}
-        style={{ backgroundColor: 'red', color: 'white' }}
+        className='bg-red-500 text-white px-4 py-2 rounded ml-4 shadow hover:bg-red-600'
       >
-        Thumbs Down
+        <NoSymbolIcon className="h-5 w-5 inline-block mr-2" />
+        Pass!
       </button>
     </div>
   )
