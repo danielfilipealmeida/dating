@@ -4,6 +4,7 @@ import PictureGallery from "./PictureGallery"
 import { TextBlock } from "./TextBlock"
 import { UserData } from "../types/user"
 
+
 interface ProfileProps {
     data: UserData
 }

@@ -4,7 +4,7 @@ export interface UserPicture {
 }
 
 export interface UserData {
-    id: number,
+    id: string,
     name: string,
     sex: string,
     bio: string,

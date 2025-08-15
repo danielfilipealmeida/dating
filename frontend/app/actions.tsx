@@ -109,7 +109,7 @@ function parseAndStoreTokenData(data: string) {
  * @param id
  * @returns the User data
  */
-export async function getUserData(id: number, token: string) {
+export async function getUserData(id: string, token: string) {
     try {
         handleTokenRefreshAndExpiration()
         const {data} = await client.query({
@@ -264,4 +264,41 @@ export async function handleTokenRefreshAndExpiration(refresh_interval=10) {
 
     // refresh the token
     await refreshToken(token, parseInt(userId))
+}
+
+
+/**
+ * Calls the Vote mutation to cast a vote for a user.
+ * 
+ * @param voterId - the ID of the user casting the vote
+ * @param votedForId - the ID of the user being voted for
+ * @param like - true if the vote is a like, false if it is a dislike
+ * 
+ * @returns the mutation result
+ * 
+ * @throws Error if the vote fails
+ */
+export async function vote(voterId: string, votedForId: string, like: boolean) {
+    try {
+        const { data } = await client.mutate({
+            mutation: gql`mutation Vote($voterId: String!, $votedForId: String!, $like: Boolean!) {
+                vote(votedId: $voterId, votedForId: $votedForId, like: $like) {
+                    id
+                    voterId
+                    votedForId
+                    like
+                }
+            }`,
+            variables: {
+                voterId,
+                votedForId,
+                like
+            }
+        });
+
+        return data.vote;
+    } catch (err: any) {
+        console.error(err.message);
+        throw new Error("Failed to cast vote");
+    }
 }
