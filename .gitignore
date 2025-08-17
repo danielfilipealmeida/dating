@@ -5,4 +5,5 @@ data/
 .aider*
 **/aider*
 **/node_modules/
+prompt*
 

@@ -13,7 +13,7 @@
 export default function Content({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50">
-      <div className="max-w-7xl w-full px-4 py-4">
+      <div className="max-w-7xl w-full px-4 py-4 text-gray-800">
         {children}
       </div>
     </div>

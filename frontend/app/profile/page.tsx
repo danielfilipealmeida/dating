@@ -10,6 +10,7 @@ import { UserData } from "../types/user";
 import PageFooter from "../components/PageFooter";
 import PageHeader from "../components/PageHeader";
 import Content from "../components/Content";
+import Link from "next/link";
 
 /**
  * This is the profile page of the dating site application.
@@ -47,6 +48,8 @@ export default function Page() {
       <Content>
         {error && <Warning>{error}</Warning>}
         <Profile data={data} />
+
+        <Link href="/edit" className="text-orange-500 hover:text-orange-800 hover:underline ">Edit Profile</Link>
       </Content>
       <PageFooter />
     </>
