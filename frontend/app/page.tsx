@@ -1,8 +1,9 @@
 'use client'
 
-import { H1 } from "./components/Headers";
 import Button from "./components/Button";
 import { useRouter } from 'next/navigation'
+import PageHeader from "./components/PageHeader";
+import Content from "./components/Content";
 
 export default function Home() {
   const router = useRouter()
@@ -22,8 +23,10 @@ export default function Home() {
   ]
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">  
-      <H1 className="t-24">Dating Site</H1>
+    <>
+    <PageHeader />
+    <Content>
+     
       <div className="bg-orange-600 text-white px-4 py-3 text-md font-normal w-1/2">
       {message.map((line, index) => (
         <p key={index} className="m-2">{line}</p>
@@ -33,6 +36,7 @@ export default function Home() {
         <Button label="Signup" onClick={handleGotoSignup} />
         <Button label="Login" onClick={handleGotoLogin} />
       </div>
-    </main>
+       </Content>
+    </>
   );
 }

@@ -1,0 +1,12 @@
+<purpose>
+Generate a next.js page styled with the tailwind css library
+</purpose>
+
+<instructions>
+    <instruction>Page as a Header with the Title "Dating App" and a burguer icon that should show a drop down menu. it is always visible and pinned to the top</instruction>
+    <instruction>There is a content zone where the content of the application will be displayed. place simple mockup text to mark the zone. this can be scrollable</instruction>
+    <instruction>A footer with a button grid that will link to the main areas of the app. the buttons are tall and should be clicable on mobilephones as well as on the web. that is always visible</instruction>
+    <instruction>even though the background color of the areas occupy fill width, their content is centered and has a limit width of 1024px</instruction>
+    <instruction>use react to allow for the display of the burger menu</instruction>
+</instructions>
+
