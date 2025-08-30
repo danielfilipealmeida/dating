@@ -43,7 +43,7 @@ export default function Page({
   if (isLoading || !data) return <p>Loading...</p>;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex flex-1 justify-center items-center bg-gray-100">
       {error && <Warning>{error}</Warning>}
       <Profile data={data} />
       <Vote votingUserId={appData.currentUser} votedUserId={String(id)}></Vote>

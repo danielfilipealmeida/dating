@@ -4,7 +4,7 @@
  * @returns 
  */
 export const upperCaseFirstLetter = (str: string): string => {
-    str = str.toLowerCase()
+    str = (str || "").toLowerCase()
 
     return str.charAt(0).toUpperCase() + str.slice(1);
 }

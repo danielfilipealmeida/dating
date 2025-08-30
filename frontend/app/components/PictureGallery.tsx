@@ -17,7 +17,7 @@ export default function PictureGallery({ pictures }: PictureGalleryProps) {
   const fileserverURL = "http://localhost:3001";
 
   let counter = 1;
-  pictures = pictures.map((picture) => {
+  pictures = (pictures || []).map((picture) => {
     const result = {
       path: picture.path,
       id: `slide${counter}`,
